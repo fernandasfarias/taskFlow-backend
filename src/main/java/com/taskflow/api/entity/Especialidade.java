@@ -7,6 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = "idEspecialidade")
 @Entity
 @Table(name = "especialidade", schema = "projetos")
 public class Especialidade {
@@ -16,6 +17,6 @@ public class Especialidade {
     @Column(name = "id_especialidade")
     private UUID idEspecialidade;
 
-    @Column(name = "nome_especialidade", nullable = false)
+    @Column(name = "nome_especialidade", nullable = false, unique = true)
     private String nomeEspecialidade;
 }
