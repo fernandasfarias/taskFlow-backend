@@ -1,6 +1,8 @@
 package com.taskflow.api.entity;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,5 +33,5 @@ public class ProjectManager {
 
     // para acessar todos os certificados do Project Manager
     @OneToMany(mappedBy = "projectManager")
-    private List<Certificacao>certificacoes;
+    private List<Certificacao>certificacoes = new ArrayList<>();
 }

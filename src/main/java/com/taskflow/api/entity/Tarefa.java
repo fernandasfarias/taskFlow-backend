@@ -1,5 +1,6 @@
 package com.taskflow.api.entity;
 
+import com.taskflow.api.enums.Status;
 import jakarta.persistence.*;
 import java.util.UUID;
 import java.time.LocalDate;
