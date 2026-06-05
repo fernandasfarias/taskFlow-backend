@@ -1,13 +1,13 @@
 package com.taskflow.api.service;
 
-import com.taskflow.api.dto.CadastroDTO;
-import com.taskflow.api.dto.CadastroResponseDTO;
-import com.taskflow.api.dto.CertificacaoDTO;
-import com.taskflow.api.dto.EmpresaDTO;
-import com.taskflow.api.dto.EspecialidadeDTO;
+import com.taskflow.api.dto.*;
+
+import com.taskflow.api.enums.TipoUsuario;
 import com.taskflow.api.repository.CertificacaoRepository;
 import com.taskflow.api.repository.EspecialidadeRepository;
 import com.taskflow.api.repository.EmpresaRepository;
+import com.taskflow.api.repository.ProjectManagerRepository;
+
 import com.taskflow.api.entity.*;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.taskflow.api.service.JwtService;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -36,7 +38,68 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
 
-    // função de cadastro
+    private final JwtService jwtService;
+
+    // metodo para buscar por email (Criei um DTO para um usuário genérico a fim de facilitar)
+    public UsuarioAutenticadoDTO buscarPorEmail(String email){
+
+        // verificando se o usuário é do tipo ProjectManager
+        var projectManager = projectManagerRepository.findByEmail(email);
+        if (projectManager.isPresent()){
+            ProjectManager pm = projectManager.get();
+            return new UsuarioAutenticadoDTO(
+                    pm.getIdManager(),
+                    pm.getNomeManager(),
+                    pm.getEmail(),
+                    pm.getSenha(),
+                    TipoUsuario.PROJECT_MANAGER
+            );
+        }
+
+        // verificando se o usuário é do tipo Cliente
+        var cliente = clienteRepository.findByEmail(email);
+        if (cliente.isPresent()){
+            Cliente client = cliente.get();
+            return new UsuarioAutenticadoDTO(
+                    client.getIdCliente(),
+                    client.getNomeCliente(),
+                    client.getEmail(),
+                    client.getSenha(),
+                    TipoUsuario.CLIENTE
+            );
+        }
+
+        // verificando se o usuário é do tipo Colaborador
+        var colaborador = colaboradorRepository.findByEmail(email);
+        if (colaborador.isPresent()){
+            Colaborador colaborador1 = colaborador.get();
+            return new UsuarioAutenticadoDTO(
+                    colaborador1.getIdColaborador(),
+                    colaborador1.getNome(),
+                    colaborador1.getEmail(),
+                    colaborador1.getSenha(),
+                    TipoUsuario.COLABORADOR
+            );
+        }
+
+        throw new RuntimeException("Usuário não encontrado");
+    }
+
+    // metodo de login
+    public LoginResponseDTO login(LoginDTO dto){
+        UsuarioAutenticadoDTO usuario = buscarPorEmail(dto.email());
+
+        if(!passwordEncoder.matches(dto.senha(), usuario.senha())){
+            throw new RuntimeException("Senha incorreta!");
+        }
+
+        // gerar token do usuario
+        String token = jwtService.gerarToken(usuario);
+
+        return new LoginResponseDTO(token);
+    }
+
+    // metodo de cadastro
     @Transactional
     public CadastroResponseDTO cadastrar(CadastroDTO dto) {
 

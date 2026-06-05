@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.validation.Valid;
 
+import com.taskflow.api.dto.LoginResponseDTO;
+import com.taskflow.api.dto.LoginDTO;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -26,8 +29,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<CadastroResponseDTO> login(@RequestBody CadastroDTO dto){
-        return ResponseEntity.ok(service.cadastrar(dto));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO dto){
+        return ResponseEntity.ok(service.login(dto));
     }
 
 }
