@@ -8,5 +8,6 @@ import java.util.*;
 @Repository
 public interface ProjectManagerRepository
     extends JpaRepository<ProjectManager, UUID>{
-        boolean existsByEmail (String email);
+        Optional<ProjectManager> findByEmail (String email);
+        boolean existsByEmail(String email);
 }
