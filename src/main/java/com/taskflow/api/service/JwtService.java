@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import com.taskflow.api.dto.UsuarioAutenticadoDTO;
+import io.jsonwebtoken.Claims;
 
 @Service
 public class JwtService {
@@ -34,5 +35,41 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 86400000)) // data de expiração (24h)
                 .signWith(getSignKey())
                 .compact();
+    }
+
+    // metodo para extrair os claims (dados armazenados dentro do token)
+    private Claims extrairClaims(String token){
+        return Jwts.parser()
+                .verifyWith(getSignKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    // metodo para extrair email
+    public String extrairEmail(String token){
+        return extrairClaims(token).getSubject();
+    }
+
+    // metodo para verificar se token está expirado
+    private boolean tokenExpirado(String token){
+        return extrairClaims(token)
+                .getExpiration()
+                .before(new Date());
+    }
+
+    // metodo para validar token
+    public boolean validarToken(String token){
+        try {
+            return !tokenExpirado(token);
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    // metodo para extrair o papel do Usuario
+    public String extrairRole(String token){
+        return extrairClaims(token)
+                .get("role", String.class);
     }
 }

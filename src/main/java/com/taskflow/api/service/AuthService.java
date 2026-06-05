@@ -41,7 +41,7 @@ public class AuthService {
     private final JwtService jwtService;
 
     // metodo para buscar por email (Criei um DTO para um usuário genérico a fim de facilitar)
-    private UsuarioAutenticadoDTO buscarPorEmail(String email){
+    public UsuarioAutenticadoDTO buscarPorEmail(String email){
 
         // verificando se o usuário é do tipo ProjectManager
         var projectManager = projectManagerRepository.findByEmail(email);
