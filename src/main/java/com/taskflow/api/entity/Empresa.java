@@ -1,14 +1,9 @@
 package com.taskflow.api.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import lombok.*;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "empresa", schema = "projetos")
 public class Empresa {
@@ -22,4 +17,31 @@ public class Empresa {
 
     @Column(nullable = false, unique = true)
     private String cnpj;
+
+    public Empresa() {
+    }
+
+    public UUID getIdEmpresa() {
+        return idEmpresa;
+    }
+
+    public void setIdEmpresa(UUID idEmpresa) {
+        this.idEmpresa = idEmpresa;
+    }
+
+    public String getNomeEmpresa() {
+        return nomeEmpresa;
+    }
+
+    public void setNomeEmpresa(String nomeEmpresa) {
+        this.nomeEmpresa = nomeEmpresa;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
 }

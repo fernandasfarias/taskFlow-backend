@@ -6,13 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name= "project_manager", schema = "projetos")
 public class ProjectManager {
@@ -30,6 +23,48 @@ public class ProjectManager {
 
     @Column(nullable = false)
     private String senha;
+
+    public UUID getIdManager() {
+        return idManager;
+    }
+
+    public void setIdManager(UUID idManager) {
+        this.idManager = idManager;
+    }
+
+    public String getNomeManager() {
+        return nomeManager;
+    }
+
+    public void setNomeManager(String nomeManager) {
+        this.nomeManager = nomeManager;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public List<Certificacao> getCertificacoes() {
+        return certificacoes;
+    }
+
+    public void setCertificacoes(List<Certificacao> certificacoes) {
+        this.certificacoes = certificacoes;
+    }
+
+    public ProjectManager(){}
 
     // para acessar todos os certificados do Project Manager
     @OneToMany(mappedBy = "projectManager")

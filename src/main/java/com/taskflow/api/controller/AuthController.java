@@ -19,9 +19,12 @@ import com.taskflow.api.dto.LoginDTO;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
     private final AuthService service;
+
+    public AuthController(AuthService service) {
+        this.service = service;
+    }
 
     @PostMapping("/cadastro")
     public ResponseEntity<CadastroResponseDTO> cadastrar(@RequestBody @Valid CadastroDTO dto){

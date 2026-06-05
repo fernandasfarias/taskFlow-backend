@@ -26,7 +26,6 @@ import java.util.Set;
 import com.taskflow.api.service.JwtService;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
     private final ProjectManagerRepository projectManagerRepository;
     private final ColaboradorRepository colaboradorRepository;
@@ -37,8 +36,27 @@ public class AuthService {
     private final EmpresaRepository empresaRepository;
 
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
+
+    public AuthService(
+            ProjectManagerRepository projectManagerRepository,
+            ColaboradorRepository colaboradorRepository,
+            ClienteRepository clienteRepository,
+            CertificacaoRepository certificacaoRepository,
+            EspecialidadeRepository especialidadeRepository,
+            EmpresaRepository empresaRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService
+    ) {
+        this.projectManagerRepository = projectManagerRepository;
+        this.colaboradorRepository = colaboradorRepository;
+        this.clienteRepository = clienteRepository;
+        this.certificacaoRepository = certificacaoRepository;
+        this.especialidadeRepository = especialidadeRepository;
+        this.empresaRepository = empresaRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
 
     // metodo para buscar por email (Criei um DTO para um usuário genérico a fim de facilitar)
     public UsuarioAutenticadoDTO buscarPorEmail(String email){

@@ -1,18 +1,8 @@
 package com.taskflow.api.entity;
-
 import jakarta.persistence.*;
-
 import java.util.UUID;
-
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "colaborador", schema = "projetos")
 public class Colaborador {
@@ -31,6 +21,47 @@ public class Colaborador {
     @Column(nullable = false)
     private String senha;
 
+    public UUID getIdColaborador() {
+        return idColaborador;
+    }
+
+    public void setIdColaborador(UUID idColaborador) {
+        this.idColaborador = idColaborador;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public List<Especialidade> getEspecialidades() {
+        return especialidades;
+    }
+
+    public void setEspecialidades(List<Especialidade> especialidades) {
+        this.especialidades = especialidades;
+    }
+
+    public Colaborador(){}
 
     // tabela intermediária: relação N:N entre colaborador e especialidade
     @ManyToMany

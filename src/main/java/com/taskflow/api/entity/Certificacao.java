@@ -1,12 +1,8 @@
 package com.taskflow.api.entity;
 
-import lombok.*;
 import jakarta.persistence.*;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "certificacao", schema = "projetos")
 public class Certificacao {
@@ -21,6 +17,57 @@ public class Certificacao {
 
     @Column(nullable = false)
     private String instituicao;
+
+    public Certificacao() {
+    }
+
+    public UUID getIdCertificacao() {
+        return idCertificacao;
+    }
+
+    public void setIdCertificacao(UUID idCertificacao) {
+        this.idCertificacao = idCertificacao;
+    }
+
+    public String getCertificacao() {
+        return certificacao;
+    }
+
+    public void setCertificacao(String certificacao) {
+        this.certificacao = certificacao;
+    }
+
+    public String getInstituicao() {
+        return instituicao;
+    }
+
+    public void setInstituicao(String instituicao) {
+        this.instituicao = instituicao;
+    }
+
+    public String getCodigoCertificacao() {
+        return codigoCertificacao;
+    }
+
+    public void setCodigoCertificacao(String codigoCertificacao) {
+        this.codigoCertificacao = codigoCertificacao;
+    }
+
+    public String getUrlComprovante() {
+        return urlComprovante;
+    }
+
+    public void setUrlComprovante(String urlComprovante) {
+        this.urlComprovante = urlComprovante;
+    }
+
+    public ProjectManager getProjectManager() {
+        return projectManager;
+    }
+
+    public void setProjectManager(ProjectManager projectManager) {
+        this.projectManager = projectManager;
+    }
 
     // opcional pois nem todos os certificados possuem código
     @Column(name ="codigo_certificacao", nullable = true)

@@ -20,11 +20,18 @@ import com.taskflow.api.dto.UsuarioAutenticadoDTO;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final AuthService authService;
+
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            AuthService authService
+    ) {
+        this.jwtService = jwtService;
+        this.authService = authService;
+    }
 
     @Override
     protected void doFilterInternal(
