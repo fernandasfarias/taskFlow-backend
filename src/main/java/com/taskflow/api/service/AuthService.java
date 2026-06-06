@@ -159,7 +159,8 @@ public class AuthService {
                 return new CadastroResponseDTO(
                         saved.getIdManager(),
                         saved.getNomeManager(),
-                        saved.getEmail()
+                        saved.getEmail(),
+                        TipoUsuario.PROJECT_MANAGER
                 );
             }
 
@@ -187,7 +188,8 @@ public class AuthService {
                 return new CadastroResponseDTO(
                         saved.getIdCliente(),
                         saved.getNomeCliente(),
-                        saved.getEmail()
+                        saved.getEmail(),
+                        TipoUsuario.CLIENTE
                 );
             }
 
@@ -220,7 +222,8 @@ public class AuthService {
                 return new CadastroResponseDTO(
                         saved.getIdColaborador(),
                         saved.getNome(),
-                        saved.getEmail()
+                        saved.getEmail(),
+                        TipoUsuario.COLABORADOR
                 );
             }
             default -> throw new RuntimeException("Tipo de usuário inválido");
