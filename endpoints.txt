@@ -1,1 +1,0 @@
-1. Endpoint de cadastro do Project Manager: http://localhost:8080/project-manager
