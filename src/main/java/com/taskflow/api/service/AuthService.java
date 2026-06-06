@@ -131,9 +131,6 @@ public class AuthService {
         // salvando os dados de acordo com o tipo do usuário
         switch(dto.tipo()) {
             case PROJECT_MANAGER -> {
-                if (dto.certificacoes() == null || dto.certificacoes().isEmpty()){
-                    throw new RuntimeException("Certificação é obrigatória para Project Manager.");
-                }
 
                 ProjectManager manager = new ProjectManager();
                 manager.setNomeManager(dto.nome());
@@ -141,20 +138,6 @@ public class AuthService {
                 manager.setSenha(passwordEncoder.encode(dto.senha()));
                 ProjectManager saved = projectManagerRepository.save(manager);
 
-                List<Certificacao> certificacoes = new ArrayList<>();
-                for (CertificacaoDTO certDTO : dto.certificacoes()){
-                    Certificacao cert = new Certificacao();
-
-                    cert.setCertificacao(certDTO.certificacao());
-                    cert.setInstituicao(certDTO.instituicao());
-                    cert.setCodigoCertificacao(certDTO.codCertificacao());
-                    cert.setUrlComprovante(certDTO.urlComprovante());
-                    cert.setProjectManager(saved);
-
-                    certificacaoRepository.save(cert);
-                    certificacoes.add(cert);
-                }
-                saved.setCertificacoes(certificacoes);
 
                 return new CadastroResponseDTO(
                         saved.getIdManager(),
@@ -165,24 +148,12 @@ public class AuthService {
             }
 
             case CLIENTE -> {
-                if (dto.empresa() == null){
-                    throw new RuntimeException("Empresa é obrigatória para Cliente.");
-                }
 
                 Cliente cliente = new Cliente();
                 cliente.setNomeCliente(dto.nome());
                 cliente.setEmail(dto.email());
                 cliente.setSenha(passwordEncoder.encode(dto.senha()));
 
-                Empresa empresa = empresaRepository.findByCnpj(dto.empresa().cnpj()).orElseGet(() -> {
-                    Empresa novaEmpresa = new Empresa();
-
-                    novaEmpresa.setNomeEmpresa(dto.empresa().nome().trim());
-                    novaEmpresa.setCnpj(dto.empresa().cnpj());
-
-                    return empresaRepository.save(novaEmpresa);
-                });
-                cliente.setEmpresa(empresa);
                 Cliente saved = clienteRepository.save(cliente);
 
                 return new CadastroResponseDTO(
@@ -194,29 +165,13 @@ public class AuthService {
             }
 
             case COLABORADOR -> {
-                if (dto.especialidades() == null || dto.especialidades().isEmpty()){
-                    throw new RuntimeException("Especialidades são obrigatórias para Colaboradores.");
-                }
-
                 Colaborador colaborador = new Colaborador();
                 colaborador.setNome(dto.nome());
                 colaborador.setEmail(dto.email());
                 colaborador.setSenha(passwordEncoder.encode(dto.senha()));
 
                 Colaborador saved = colaboradorRepository.save(colaborador);
-                Set<Especialidade> especialidades = new HashSet<>();
 
-                for (EspecialidadeDTO espec : dto.especialidades()){
-                    String nomeEspecialidade = espec.nomeEspecialidade().trim().toLowerCase();
-
-                    Especialidade especialidade = especialidadeRepository.findByNomeEspecialidade(nomeEspecialidade).orElseGet(() -> {
-                        Especialidade novaEspecialidade = new Especialidade();
-                        novaEspecialidade.setNomeEspecialidade(nomeEspecialidade);
-                        return especialidadeRepository.save(novaEspecialidade);
-                    });
-                    especialidades.add(especialidade);
-                }
-                saved.setEspecialidades(new ArrayList<>(especialidades));
                 colaboradorRepository.save(saved);
 
                 return new CadastroResponseDTO(

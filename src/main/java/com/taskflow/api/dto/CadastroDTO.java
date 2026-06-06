@@ -8,14 +8,5 @@ public record CadastroDTO(
     String nome,
     String email,
     String senha,
-    TipoUsuario tipo,
-
-    @Valid
-    EmpresaDTO empresa,
-
-    @Valid
-    List<CertificacaoDTO> certificacoes,
-
-    @Valid
-    List<EspecialidadeDTO> especialidades
+    TipoUsuario tipo
 ) {}
