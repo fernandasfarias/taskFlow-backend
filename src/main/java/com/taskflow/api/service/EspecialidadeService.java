@@ -18,12 +18,10 @@ public class EspecialidadeService {
     private final ColaboradorRepository colaboradorRepository;
     private final EspecialidadeRepository especialidadeRepository;
 
+    // metodo utilizado no cadastro do colaborador: adicionar uma ou mais especialidades.
     @Transactional
     public void adicionar(UUID id, List<EspecialidadeDTO> dtos) {
-
         Colaborador col = colaboradorRepository.findById(id).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
-
-        Set<Especialidade> especialidades = new HashSet<>();
 
         for (EspecialidadeDTO dto : dtos) {
             String nome = dto.nomeEspecialidade().trim().toLowerCase();
@@ -33,10 +31,33 @@ public class EspecialidadeService {
                         nova.setNomeEspecialidade(nome);
                         return especialidadeRepository.save(nova);
                     });
-            especialidades.add(esp);
-        }
 
-        col.setEspecialidades(new ArrayList<>(especialidades));
+            if (!col.getEspecialidades().contains(esp)){
+                col.getEspecialidades().add(esp);
+            }
+        }
         colaboradorRepository.save(col);
+    }
+
+    // metodo utilizado na tela de perfil: remover especialidade
+    @Transactional
+    public void removerEspecialidade(UUID idColaborador, UUID idEspecialidade){
+        Colaborador colaborador = colaboradorRepository.findById(idColaborador).orElseThrow(() -> new RuntimeException("colaborador não encontrado."));
+        Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada."));
+
+        colaborador.getEspecialidades().removeIf(e -> e.getIdEspecialidade().equals(especialidade.getIdEspecialidade()));
+        colaboradorRepository.save(colaborador);
+    }
+
+    // metodo utilizado na tela de perfil: adicionar uma especialidade por vez
+    @Transactional
+    public void adicionarEspecialidade(UUID idColaborador, UUID idEspecialidade){
+        Colaborador colaborador = colaboradorRepository.findById(idColaborador).orElseThrow(() -> new RuntimeException("colaborador não encontrado"));
+        Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada"));
+
+        if (!colaborador.getEspecialidades().contains(especialidade)){
+            colaborador.getEspecialidades().add(especialidade);
+        }
+        colaboradorRepository.save(colaborador);
     }
 }

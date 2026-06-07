@@ -67,6 +67,6 @@ public class ProjectManager {
     public ProjectManager(){}
 
     // para acessar todos os certificados do Project Manager
-    @OneToMany(mappedBy = "projectManager")
+    @OneToMany(mappedBy = "projectManager", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Certificacao>certificacoes = new ArrayList<>();
 }

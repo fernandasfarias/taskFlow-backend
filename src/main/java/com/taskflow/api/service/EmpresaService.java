@@ -20,11 +20,10 @@ public class EmpresaService {
     private final ClienteRepository clienteRepository;
     private final EmpresaRepository empresaRepository;
 
+    // vincular empresa ao cliente
     @Transactional
     public void vincular(UUID idCliente, EmpresaDTO dto) {
-
-        Cliente cliente = clienteRepository.findById(idCliente)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         Empresa empresa = empresaRepository.findByCnpj(dto.cnpj())
                 .orElseGet(() -> {
@@ -33,8 +32,15 @@ public class EmpresaService {
                     nova.setCnpj(dto.cnpj());
                     return empresaRepository.save(nova);
                 });
-
         cliente.setEmpresa(empresa);
+        clienteRepository.save(cliente);
+    }
+
+    // remover empresa na tela de perfil
+    @Transactional
+    public void removerEmpresa(UUID idCliente){
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
+        cliente.setEmpresa(null);
         clienteRepository.save(cliente);
     }
 }
