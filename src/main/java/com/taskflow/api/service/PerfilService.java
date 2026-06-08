@@ -17,13 +17,15 @@ public class PerfilService {
     private final ColaboradorRepository colaboradorRepository;
 
     // atualizar dados do perfil
-    public void atualizar(UUID id, AtualizarPerfilDTO dto) {
+    public void atualizar(String email, AtualizarPerfilDTO dto) {
+
+        System.out.println("EMAIL RECEBIDO: " + email);
         if (dto.getNome() == null && dto.getEmail() == null && dto.getSenha() == null) {
             throw new RuntimeException("Nada para atualizar");
         }
 
-        if (projectManagerRepository.findById(id).isPresent()) {
-            var pm = projectManagerRepository.findById(id).get();
+        if (projectManagerRepository.findByEmail(email).isPresent()) {
+            var pm = projectManagerRepository.findByEmail(email).get();
 
             if (dto.getNome() != null) pm.setNomeManager(dto.getNome());
             if (dto.getEmail() != null) pm.setEmail(dto.getEmail());
@@ -33,8 +35,8 @@ public class PerfilService {
             return;
         }
 
-        if (clienteRepository.findById(id).isPresent()) {
-            var cliente = clienteRepository.findById(id).get();
+        if (clienteRepository.findByEmail(email).isPresent()) {
+            var cliente = clienteRepository.findByEmail(email).get();
 
             if (dto.getNome() != null) cliente.setNomeCliente(dto.getNome());
             if (dto.getEmail() != null) cliente.setEmail(dto.getEmail());
@@ -44,8 +46,8 @@ public class PerfilService {
             return;
         }
 
-        if (colaboradorRepository.findById(id).isPresent()) {
-            var colaborador = colaboradorRepository.findById(id).get();
+        if (colaboradorRepository.findByEmail(email).isPresent()) {
+            var colaborador = colaboradorRepository.findByEmail(email).get();
 
             if (dto.getNome() != null) colaborador.setNome(dto.getNome());
             if (dto.getEmail() != null) colaborador.setEmail(dto.getEmail());
@@ -57,17 +59,20 @@ public class PerfilService {
         throw new RuntimeException("Usuário não encontrado");
     }
 
-    public void removerPerfil(UUID id){
-        if(projectManagerRepository.existsById(id)){
-            projectManagerRepository.deleteById(id);
+    public void removerPerfil(String email){
+        var pm = projectManagerRepository.findByEmail(email);
+        if(pm.isPresent()){
+            projectManagerRepository.delete(pm.get());
             return;
         }
-        if(clienteRepository.existsById(id)){
-            clienteRepository.deleteById(id);
+        var cliente = clienteRepository.findByEmail(email);
+        if(cliente.isPresent()){
+            clienteRepository.delete(cliente.get());
             return;
         }
-        if(colaboradorRepository.existsById(id)){
-            colaboradorRepository.deleteById(id);
+        var colaborador = colaboradorRepository.findByEmail(email);
+        if(colaborador.isPresent()){
+            colaboradorRepository.delete(colaborador.get());
             return;
         }
         throw new RuntimeException("Usuário não encontrado");

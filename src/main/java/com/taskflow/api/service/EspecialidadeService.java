@@ -41,8 +41,8 @@ public class EspecialidadeService {
 
     // metodo utilizado na tela de perfil: remover especialidade
     @Transactional
-    public void removerEspecialidade(UUID idColaborador, UUID idEspecialidade){
-        Colaborador colaborador = colaboradorRepository.findById(idColaborador).orElseThrow(() -> new RuntimeException("colaborador não encontrado."));
+    public void removerEspecialidade(String email, UUID idEspecialidade){
+        Colaborador colaborador = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("colaborador não encontrado."));
         Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada."));
 
         colaborador.getEspecialidades().removeIf(e -> e.getIdEspecialidade().equals(especialidade.getIdEspecialidade()));
@@ -51,8 +51,8 @@ public class EspecialidadeService {
 
     // metodo utilizado na tela de perfil: adicionar uma especialidade por vez
     @Transactional
-    public void adicionarEspecialidade(UUID idColaborador, UUID idEspecialidade){
-        Colaborador colaborador = colaboradorRepository.findById(idColaborador).orElseThrow(() -> new RuntimeException("colaborador não encontrado"));
+    public void adicionarEspecialidade(String email, UUID idEspecialidade){
+        Colaborador colaborador = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("colaborador não encontrado"));
         Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada"));
 
         if (!colaborador.getEspecialidades().contains(especialidade)){

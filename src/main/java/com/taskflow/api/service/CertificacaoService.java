@@ -2,6 +2,7 @@ package com.taskflow.api.service;
 
 import com.taskflow.api.dto.AtualizarCertificacoesDTO;
 import com.taskflow.api.dto.CertificacaoDTO;
+import com.taskflow.api.dto.UsuarioAutenticadoDTO;
 import com.taskflow.api.entity.Certificacao;
 import com.taskflow.api.entity.ProjectManager;
 import com.taskflow.api.repository.CertificacaoRepository;
@@ -41,20 +42,20 @@ public class CertificacaoService {
         projectManagerRepository.save(pm);
     }
 
-    public void atualizar(UUID id, AtualizarCertificacoesDTO dto){
+    public void atualizar(UUID id, CertificacaoDTO dto){
         Certificacao certificacao = certificacaoRepository.findById(id).orElseThrow(() -> new RuntimeException("Certificação não encontrada"));
 
-        if(dto.getNome() != null){
-            certificacao.setCertificacao(dto.getNome());
+        if(dto.certificacao() != null){
+            certificacao.setCertificacao(dto.certificacao());
         }
-        if(dto.getInstituicao() != null){
-            certificacao.setInstituicao(dto.getInstituicao());
+        if(dto.instituicao() != null){
+            certificacao.setInstituicao(dto.instituicao());
         }
-        if(dto.getCodigoCertificacao() != null){
-            certificacao.setCodigoCertificacao(dto.getCodigoCertificacao());
+        if(dto.codCertificacao() != null){
+            certificacao.setCodigoCertificacao(dto.codCertificacao());
         }
-        if(dto.getUrlComprovante() != null){
-            certificacao.setUrlComprovante(dto.getUrlComprovante());
+        if(dto.urlComprovante() != null){
+            certificacao.setUrlComprovante(dto.urlComprovante());
         }
         certificacaoRepository.save(certificacao);
     }
@@ -65,8 +66,8 @@ public class CertificacaoService {
     }
 
     // adicionar somente uma certificacao na tela de perfil
-    public void adicionarCertificacao(UUID idManager, CertificacaoDTO dto){
-        ProjectManager pm = projectManagerRepository.findById(idManager).orElseThrow(() -> new RuntimeException("PM não encontrado"));
+    public void adicionarCertificacao(String email, CertificacaoDTO dto){
+        ProjectManager pm = projectManagerRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("PM não encontrado"));
 
         Certificacao certificacao = new Certificacao();
         certificacao.setCertificacao(dto.certificacao());
@@ -76,7 +77,5 @@ public class CertificacaoService {
         certificacao.setProjectManager(pm);
 
         certificacaoRepository.save(certificacao);
-        pm.getCertificacoes().add(certificacao);
-        projectManagerRepository.save(pm);
     }
 }

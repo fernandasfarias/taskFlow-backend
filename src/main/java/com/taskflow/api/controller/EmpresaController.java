@@ -19,6 +19,6 @@ public class EmpresaController {
             @PathVariable UUID idCliente,
             @RequestBody EmpresaDTO dto
     ) {
-        empresaService.vincular(idCliente, dto);
+        empresaService.vincularEmpresaCadastro(idCliente, dto);
     }
 }

@@ -20,10 +20,26 @@ public class EmpresaService {
     private final ClienteRepository clienteRepository;
     private final EmpresaRepository empresaRepository;
 
-    // vincular empresa ao cliente
+    // vincular empresa ao cliente durante o cadastro
     @Transactional
-    public void vincular(UUID idCliente, EmpresaDTO dto) {
+    public void vincularEmpresaCadastro(UUID idCliente, EmpresaDTO dto) {
         Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        Empresa empresa = empresaRepository.findByCnpj(dto.cnpj())
+                .orElseGet(() -> {
+                    Empresa nova = new Empresa();
+                    nova.setNomeEmpresa(dto.nome());
+                    nova.setCnpj(dto.cnpj());
+                    return empresaRepository.save(nova);
+                });
+        cliente.setEmpresa(empresa);
+        clienteRepository.save(cliente);
+    }
+
+    // vincular nova empresa ao cliente na tela de perfil
+    @Transactional
+    public void vincularEmpresa(String email, EmpresaDTO dto) {
+        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         Empresa empresa = empresaRepository.findByCnpj(dto.cnpj())
                 .orElseGet(() -> {
@@ -38,8 +54,8 @@ public class EmpresaService {
 
     // remover empresa na tela de perfil
     @Transactional
-    public void removerEmpresa(UUID idCliente){
-        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
+    public void removerEmpresa(String email){
+        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
         cliente.setEmpresa(null);
         clienteRepository.save(cliente);
     }

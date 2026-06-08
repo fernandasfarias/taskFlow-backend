@@ -18,6 +18,13 @@ public class Certificacao {
     @Column(nullable = false)
     private String instituicao;
 
+    // opcional pois nem todos os certificados possuem código
+    @Column(name ="codigo_certificacao", nullable = true)
+    private String codigoCertificacao;
+
+    @Column(name = "url_comprovante", nullable = false)
+    private String urlComprovante;
+
     public Certificacao() {
     }
 
@@ -68,13 +75,6 @@ public class Certificacao {
     public void setProjectManager(ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
-
-    // opcional pois nem todos os certificados possuem código
-    @Column(name ="codigo_certificacao", nullable = true)
-    private String codigoCertificacao;
-
-    @Column(name = "url_comprovante", nullable = false)
-    private String urlComprovante;
 
     // relação N:1 entre Certificacao e ProjectManager
     @ManyToOne
