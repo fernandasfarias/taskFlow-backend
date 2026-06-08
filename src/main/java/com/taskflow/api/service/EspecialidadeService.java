@@ -51,13 +51,14 @@ public class EspecialidadeService {
 
     // metodo utilizado na tela de perfil: adicionar uma especialidade por vez
     @Transactional
-    public void adicionarEspecialidade(String email, UUID idEspecialidade){
+    public void adicionarEspecialidade(String email, EspecialidadeDTO dto){
         Colaborador colaborador = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("colaborador não encontrado"));
-        Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada"));
 
-        if (!colaborador.getEspecialidades().contains(especialidade)){
-            colaborador.getEspecialidades().add(especialidade);
-        }
+        Especialidade especialidade = new Especialidade();
+        especialidade.setNomeEspecialidade(dto.nomeEspecialidade());
+
+        especialidade = especialidadeRepository.save(especialidade);
+        colaborador.getEspecialidades().add(especialidade);
         colaboradorRepository.save(colaborador);
     }
 }

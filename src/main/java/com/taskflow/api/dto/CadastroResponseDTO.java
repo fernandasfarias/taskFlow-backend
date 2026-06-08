@@ -5,8 +5,8 @@ import com.taskflow.api.enums.TipoUsuario;
 import java.util.UUID;
 
 public record CadastroResponseDTO (
-    UUID idManager,
-    String nomeManager,
+    UUID idUsuario,
+    String nomeUsuario,
     String Email,
     TipoUsuario tipo
 ) {}

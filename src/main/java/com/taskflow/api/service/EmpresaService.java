@@ -23,7 +23,8 @@ public class EmpresaService {
     // vincular empresa ao cliente durante o cadastro
     @Transactional
     public void vincularEmpresaCadastro(UUID idCliente, EmpresaDTO dto) {
-        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = clienteRepository.findById(idCliente)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
         Empresa empresa = empresaRepository.findByCnpj(dto.cnpj())
                 .orElseGet(() -> {
@@ -32,22 +33,22 @@ public class EmpresaService {
                     nova.setCnpj(dto.cnpj());
                     return empresaRepository.save(nova);
                 });
+
         cliente.setEmpresa(empresa);
         clienteRepository.save(cliente);
     }
 
-    // vincular nova empresa ao cliente na tela de perfil
+    // adicionar empresa caso o cliente remova na tela de perfil
     @Transactional
-    public void vincularEmpresa(String email, EmpresaDTO dto) {
+    public void adicionarEmpresa(String email, EmpresaDTO dto) {
         Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        Empresa empresa = empresaRepository.findByCnpj(dto.cnpj())
-                .orElseGet(() -> {
-                    Empresa nova = new Empresa();
-                    nova.setNomeEmpresa(dto.nome());
-                    nova.setCnpj(dto.cnpj());
-                    return empresaRepository.save(nova);
-                });
+        Empresa empresa = empresaRepository.findByCnpj(dto.cnpj()).orElseGet(() -> {
+            Empresa novaEmpresa = new Empresa();
+            novaEmpresa.setNomeEmpresa(dto.nome());
+            novaEmpresa.setCnpj(dto.cnpj());
+            return empresaRepository.save(novaEmpresa);
+        });
         cliente.setEmpresa(empresa);
         clienteRepository.save(cliente);
     }

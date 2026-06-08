@@ -14,13 +14,8 @@ import java.util.UUID;
 @RequestMapping("/onboarding/certificacoes")
 public class CertificacaoController {
     private final CertificacaoService certificacaoService;
-
     @PostMapping("/{idManager}")
-    public void adicionarCertificacoes(
-            @PathVariable UUID idManager,
-            @RequestBody List<CertificacaoDTO> dtos
-    ) {
+    public void adicionarCertificacoes(@PathVariable UUID idManager, @RequestBody List<CertificacaoDTO> dtos) {
         certificacaoService.adicionar(idManager, dtos);
     }
-
 }

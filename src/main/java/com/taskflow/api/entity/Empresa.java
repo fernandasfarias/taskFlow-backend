@@ -1,6 +1,7 @@
 package com.taskflow.api.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ public class Empresa {
     @Column(name = "nome_empresa", nullable = false)
     private String nomeEmpresa;
 
+    @Pattern(regexp = "\\d{2}\\.?\\d{3}\\.?\\d{3}/?\\d{4}-?\\d{2}")
     @Column(nullable = false, unique = true)
     private String cnpj;
 

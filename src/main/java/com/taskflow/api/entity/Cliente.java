@@ -63,6 +63,6 @@ public class Cliente {
     }
     // Relação N:1 entre Cliente e Empresa
     @ManyToOne
-    @JoinColumn(name = "id_empresa", nullable = false)
+    @JoinColumn(name = "id_empresa", nullable = true)
     private Empresa empresa;
 }

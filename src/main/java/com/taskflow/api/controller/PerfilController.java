@@ -55,25 +55,29 @@ public class PerfilController {
     /*CRIAR COLABORADOR E CRIAR CLIENTE PARA TESTAR ESPECIALIDADE E TESTAR EMPRESA*/
     //ESPECIALIDADE
     // adicionar especialidade
-    @PostMapping("me/especialidade/{idEspecialidade}")
-    public void adicionarEspecialidade(Authentication authentication, @PathVariable UUID idEspecialidade){
-        especialidadeService.adicionarEspecialidade(authentication.getName(), idEspecialidade);
+    // FUNCIONANDO
+    @PostMapping("me/especialidade")
+    public void adicionarEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EspecialidadeDTO dto){
+        especialidadeService.adicionarEspecialidade(user.email(), dto);
     }
     // remover especialidade
+    // FUNCIONANDO
     @DeleteMapping("me/especialidade/{idEspecialidade}")
-    public void removerEspecialidade(Authentication authentication, @PathVariable UUID idEspecialidade){
-        especialidadeService.removerEspecialidade(authentication.getName(), idEspecialidade);
+    public void removerEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @PathVariable UUID idEspecialidade){
+        especialidadeService.removerEspecialidade(user.email(), idEspecialidade);
     }
 
     // EMPRESA
-    // vincular empresa
-    @PutMapping("me/empresa")
-    public void vincularEmpresa(Authentication authentication, @RequestBody EmpresaDTO dto){
-        empresaService.vincularEmpresa(authentication.getName(), dto);
+    // adicionar nova empresa caso o cliente tenha removido a que ele criou durante o cadastro
+    // FUNCIONANDO
+    @PostMapping("/me/empresa")
+    public void adicionarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EmpresaDTO dto){
+        empresaService.adicionarEmpresa(user.email(), dto);
     }
     // remover empresa
-    @DeleteMapping("me/empresa")
-    public void removerEmpresa(Authentication authentication){
-        empresaService.removerEmpresa(authentication.getName());
+    // FUNCIONANDO
+    @DeleteMapping("/me/empresa")
+    public void removerEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
+        empresaService.removerEmpresa(user.email());
     }
 }

@@ -11,14 +11,11 @@ import java.util.UUID;
 @RequestMapping("/onboarding/empresa")
 @RequiredArgsConstructor
 public class EmpresaController {
-
     private final EmpresaService empresaService;
 
     @PostMapping("/{idCliente}")
-    public void adicionarEmpresa(
-            @PathVariable UUID idCliente,
-            @RequestBody EmpresaDTO dto
-    ) {
+    public void vincularEmpresaCadastro(@PathVariable UUID idCliente, @RequestBody EmpresaDTO dto) {
         empresaService.vincularEmpresaCadastro(idCliente, dto);
     }
+
 }
