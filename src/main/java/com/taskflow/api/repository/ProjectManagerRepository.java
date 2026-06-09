@@ -10,4 +10,6 @@ public interface ProjectManagerRepository
     extends JpaRepository<ProjectManager, UUID>{
         Optional<ProjectManager> findByEmail (String email);
         boolean existsByEmail(String email);
+
+        Optional<ProjectManager> findByTokenRecuperacaoSenha(String token);
 }

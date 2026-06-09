@@ -10,4 +10,6 @@ public interface ColaboradorRepository
         extends JpaRepository<Colaborador, UUID>{
             boolean existsByEmail(String email);
             Optional<Colaborador> findByEmail(String email);
+
+            Optional<Colaborador> findByTokenRecuperacaoSenha(String token);
 }
