@@ -60,4 +60,11 @@ public class EmpresaService {
         cliente.setEmpresa(null);
         clienteRepository.save(cliente);
     }
+
+    // listar empresa
+    public EmpresaDTO listarEmpresa(String email){
+        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Empresa empresa = cliente.getEmpresa();
+        return new EmpresaDTO(empresa.getNomeEmpresa(), empresa.getCnpj());
+    }
 }

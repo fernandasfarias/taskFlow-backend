@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 import org.springframework.security.core.Authentication;
+import java.util.List;
 
 @RestController
 @RequestMapping("/profile")
@@ -20,20 +21,29 @@ public class PerfilController {
     private final EmpresaService empresaService;
     private final EspecialidadeService especialidadeService;
 
+    // PERFIL DO USUARIO
     // editar o perfil do usuario: enpoint profile/id
     // FUNCIONANDO
     @PutMapping("/me")
     public void atualizarPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO usuario, @RequestBody AtualizarPerfilDTO dto){
-        perfilService.atualizar(usuario.email(), dto);
+        perfilService.atualizarPerfil(usuario.email(), dto);
     }
+    // deleter o perfil do usuario
     // FUNCIONANDO
     @DeleteMapping("/me")
     public void removerPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO usuarioAutenticadoDTO){
         perfilService.removerPerfil(usuarioAutenticadoDTO.email());
     }
+    // buscar dados do perfil do usuario
+    //FUNCIONANDO
+    @GetMapping("/me")
+    public PerfilDTO getPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO user, Authentication authentication){
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        return perfilService.buscarPerfil(user.email(), role);
+    }
 
     // CERTIFICACAO
-    // adicionar nova certificacao
+    // adicionar uma nova certificacao
     // FUNCIONANDO
     @PostMapping("/me/certificacoes")
     public void adicionarCertificacao(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody CertificacaoDTO dto){
@@ -51,8 +61,13 @@ public class PerfilController {
     public void removerCertificacao(@PathVariable UUID id){
         certificacaoService.remover(id);
     }
+    // Mostrar certificações
+    // FUNCIONANDO
+    @GetMapping("/me/certificacoes")
+    public List<CertificacaoDTO> listarCertificacoes(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
+        return certificacaoService.listarPorEmail(user.email());
+    }
 
-    /*CRIAR COLABORADOR E CRIAR CLIENTE PARA TESTAR ESPECIALIDADE E TESTAR EMPRESA*/
     //ESPECIALIDADE
     // adicionar especialidade
     // FUNCIONANDO
@@ -65,6 +80,12 @@ public class PerfilController {
     @DeleteMapping("me/especialidade/{idEspecialidade}")
     public void removerEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @PathVariable UUID idEspecialidade){
         especialidadeService.removerEspecialidade(user.email(), idEspecialidade);
+    }
+    // listar especialidades
+    // FUNCIONANDO
+    @GetMapping("/me/especialidades")
+    public List<EspecialidadeDTO> listarEspecialidades(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
+        return especialidadeService.listarEspecialidades(user.email());
     }
 
     // EMPRESA
@@ -79,5 +100,11 @@ public class PerfilController {
     @DeleteMapping("/me/empresa")
     public void removerEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
         empresaService.removerEmpresa(user.email());
+    }
+    // listar empresa
+    // FUNCIONANDO
+    @GetMapping("/me/empresa")
+    public EmpresaDTO listarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
+        return empresaService.listarEmpresa(user.email());
     }
 }

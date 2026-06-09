@@ -1,6 +1,8 @@
 package com.taskflow.api.service;
 
 import com.taskflow.api.dto.AtualizarPerfilDTO;
+import com.taskflow.api.dto.PerfilDTO;
+import com.taskflow.api.dto.UsuarioAutenticadoDTO;
 import com.taskflow.api.entity.Cliente;
 import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.entity.ProjectManager;
@@ -17,7 +19,7 @@ public class PerfilService {
     private final ColaboradorRepository colaboradorRepository;
 
     // atualizar dados do perfil
-    public void atualizar(String email, AtualizarPerfilDTO dto) {
+    public void atualizarPerfil(String email, AtualizarPerfilDTO dto) {
 
         System.out.println("EMAIL RECEBIDO: " + email);
         if (dto.getNome() == null && dto.getEmail() == null && dto.getSenha() == null) {
@@ -76,5 +78,21 @@ public class PerfilService {
             return;
         }
         throw new RuntimeException("Usuário não encontrado");
+    }
+
+    public PerfilDTO buscarPerfil(String email, String role){
+        if(role.equals("ROLE_PROJECT_MANAGER")){
+            ProjectManager pm = projectManagerRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Project Manager não encontrado."));
+            return new PerfilDTO(pm.getNomeManager(), pm.getEmail(), "******");
+        }
+        if(role.equals("ROLE_CLIENTE")){
+            Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+            return new PerfilDTO(cliente.getNomeCliente(), cliente.getEmail(), "******");
+        }
+        if(role.equals("ROLE_COLABORADOR")){
+            Colaborador col = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+            return new PerfilDTO(col.getNome(), col.getEmail(), "******");
+        }
+        throw new RuntimeException("Tipo de usuário inválido");
     }
 }

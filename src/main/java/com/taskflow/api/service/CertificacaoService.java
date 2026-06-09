@@ -7,6 +7,7 @@ import com.taskflow.api.entity.Certificacao;
 import com.taskflow.api.entity.ProjectManager;
 import com.taskflow.api.repository.CertificacaoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.taskflow.api.repository.ProjectManagerRepository;
@@ -77,5 +78,11 @@ public class CertificacaoService {
         certificacao.setProjectManager(pm);
 
         certificacaoRepository.save(certificacao);
+    }
+
+    // metodo para listar as certificações
+    public List<CertificacaoDTO> listarPorEmail(String email){
+        ProjectManager pm = projectManagerRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        return pm.getCertificacoes().stream().map(cert -> new CertificacaoDTO(cert.getCertificacao(), cert.getInstituicao(), cert.getCodigoCertificacao(), cert.getUrlComprovante())).toList();
     }
 }

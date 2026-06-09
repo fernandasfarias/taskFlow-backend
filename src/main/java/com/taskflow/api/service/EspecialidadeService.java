@@ -61,4 +61,10 @@ public class EspecialidadeService {
         colaborador.getEspecialidades().add(especialidade);
         colaboradorRepository.save(colaborador);
     }
+
+    // metodo utilizado na tela de perfil: listar especialidades
+    public List<EspecialidadeDTO> listarEspecialidades(String email){
+        Colaborador col = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        return col.getEspecialidades().stream().map(esp -> new EspecialidadeDTO(esp.getNomeEspecialidade())).toList();
+    }
 }
