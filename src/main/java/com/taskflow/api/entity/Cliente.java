@@ -1,5 +1,7 @@
 package com.taskflow.api.entity;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -19,6 +21,12 @@ public class Cliente {
 
     @Column(nullable = false)
     private String senha;
+
+    @Column(nullable = false)
+    private String tokenRecuperacaoSenha;
+
+    @Column(nullable = false)
+    private LocalDateTime expiracaoTokenRecuperacaoSenha;
 
     public Cliente(){}
 
@@ -61,6 +69,16 @@ public class Cliente {
     public void setEmpresa(Empresa empresa) {
         this.empresa = empresa;
     }
+
+    public String getTokenRecuperacaoSenha() { return tokenRecuperacaoSenha; }
+
+    public void setTokenRecuperacaoSenha(String tokenRecuperacaoSenha) { this.tokenRecuperacaoSenha = tokenRecuperacaoSenha; }
+
+    public LocalDateTime getExpiracaoTokenRecuperacaoSenha() { return expiracaoTokenRecuperacaoSenha; }
+
+    public void setExpiracaoTokenRecuperacaoSenha(LocalDateTime expiracaoTokenRecuperacaoSenha) { this.expiracaoTokenRecuperacaoSenha = expiracaoTokenRecuperacaoSenha; }
+
+
     // Relação N:1 entre Cliente e Empresa
     @ManyToOne
     @JoinColumn(name = "id_empresa", nullable = true)

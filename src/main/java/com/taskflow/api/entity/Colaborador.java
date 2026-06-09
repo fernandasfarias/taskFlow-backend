@@ -1,5 +1,7 @@
 package com.taskflow.api.entity;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.List;
 
@@ -20,6 +22,12 @@ public class Colaborador {
 
     @Column(nullable = false)
     private String senha;
+
+    @Column(nullable = false)
+    private String tokenRecuperacaoSenha;
+
+    @Column(nullable = false)
+    private LocalDateTime expiracaoTokenRecuperacaoSenha;
 
     public UUID getIdColaborador() {
         return idColaborador;
@@ -60,6 +68,14 @@ public class Colaborador {
     public void setEspecialidades(List<Especialidade> especialidades) {
         this.especialidades = especialidades;
     }
+
+    public String getTokenRecuperacaoSenha() { return tokenRecuperacaoSenha; }
+
+    public void setTokenRecuperacaoSenha(String tokenRecuperacaoSenha) { this.tokenRecuperacaoSenha = tokenRecuperacaoSenha; }
+
+    public LocalDateTime getExpiracaoTokenRecuperacaoSenha() { return expiracaoTokenRecuperacaoSenha; }
+
+    public void setExpiracaoTokenRecuperacaoSenha(LocalDateTime expiracaoTokenRecuperacaoSenha) { this.expiracaoTokenRecuperacaoSenha = expiracaoTokenRecuperacaoSenha; }
 
     public Colaborador(){}
 

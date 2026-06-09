@@ -2,6 +2,7 @@ package com.taskflow.api.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,12 @@ public class ProjectManager {
 
     @Column(nullable = false)
     private String senha;
+
+    @Column(nullable = false)
+    private String tokenRecuperacaoSenha;
+
+    @Column(nullable = false)
+    private LocalDateTime expiracaoTokenRecuperacaoSenha;
 
     public UUID getIdManager() {
         return idManager;
@@ -63,6 +70,14 @@ public class ProjectManager {
     public void setCertificacoes(List<Certificacao> certificacoes) {
         this.certificacoes = certificacoes;
     }
+
+    public String getTokenRecuperacaoSenha() { return tokenRecuperacaoSenha; }
+
+    public void setTokenRecuperacaoSenha(String tokenRecuperacaoSenha) { this.tokenRecuperacaoSenha = tokenRecuperacaoSenha; }
+
+    public LocalDateTime getExpiracaoTokenRecuperacaoSenha() { return expiracaoTokenRecuperacaoSenha; }
+
+    public void setExpiracaoTokenRecuperacaoSenha(LocalDateTime expiracaoTokenRecuperacaoSenha) { this.expiracaoTokenRecuperacaoSenha = expiracaoTokenRecuperacaoSenha; }
 
     public ProjectManager(){}
 
