@@ -93,6 +93,9 @@ public class PerfilService {
             Colaborador col = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
             return new PerfilDTO(col.getNome(), col.getEmail(), "******");
         }
+
+
+
         throw new RuntimeException("Tipo de usuário inválido");
     }
 }
