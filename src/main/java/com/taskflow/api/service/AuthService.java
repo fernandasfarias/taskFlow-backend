@@ -257,7 +257,7 @@ public class AuthService {
             );
         }
 
-        return "Será enviado instruções de recuperação, para o email informado";
+        return "Será enviado instruções de recuperação, para o email informado, por favor verificar a caixa de email e o Spam.";
     }
 
     // metodo de solicitar recuperação de senha
