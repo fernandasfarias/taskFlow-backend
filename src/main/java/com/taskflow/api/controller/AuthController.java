@@ -1,7 +1,6 @@
 package com.taskflow.api.controller;
 
-import com.taskflow.api.dto.CadastroDTO;
-import com.taskflow.api.dto.CadastroResponseDTO;
+import com.taskflow.api.dto.*;
 import com.taskflow.api.service.AuthService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,9 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.validation.Valid;
-
-import com.taskflow.api.dto.LoginResponseDTO;
-import com.taskflow.api.dto.LoginDTO;
 
 @RestController
 @RequestMapping("/auth")
@@ -34,6 +30,20 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO dto){
         return ResponseEntity.ok(service.login(dto));
+    }
+
+    @PostMapping("/recuperar-senha")
+    public ResponseEntity<String> solicitarRecuperacaoSenha(
+            @RequestBody @Valid RecuperarSenhaDTO recuperarSenhaDTO
+    ) {
+        return ResponseEntity.ok(service.solicitarRecuperacaoSenha(recuperarSenhaDTO.email()));
+    }
+
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<String> redefinirSenha(
+            @RequestBody @Valid RedefinirSenhaDTO redefinirSenhaDTO
+    ) {
+        return ResponseEntity.ok(service.redefinirSenha(redefinirSenhaDTO.token(), redefinirSenhaDTO.novaSenha()));
     }
 
 }

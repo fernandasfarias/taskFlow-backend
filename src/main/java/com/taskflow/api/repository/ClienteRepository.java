@@ -10,4 +10,6 @@ public interface ClienteRepository
         extends JpaRepository<Cliente, UUID>{
             boolean existsByEmail(String email);
             Optional<Cliente> findByEmail(String email);
+
+            Optional<Cliente> findByTokenRecuperacaoSenha(String token);
 }

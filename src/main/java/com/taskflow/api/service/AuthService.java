@@ -9,6 +9,7 @@ import com.taskflow.api.repository.EmpresaRepository;
 import com.taskflow.api.repository.ProjectManagerRepository;
 
 import com.taskflow.api.entity.*;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
 
 import com.taskflow.api.repository.*;
@@ -18,10 +19,8 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import com.taskflow.api.service.JwtService;
 
@@ -37,6 +36,7 @@ public class AuthService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final EmailService emailService;
 
     public AuthService(
             ProjectManagerRepository projectManagerRepository,
@@ -46,7 +46,8 @@ public class AuthService {
             EspecialidadeRepository especialidadeRepository,
             EmpresaRepository empresaRepository,
             PasswordEncoder passwordEncoder,
-            JwtService jwtService
+            JwtService jwtService,
+            EmailService emailService
     ) {
         this.projectManagerRepository = projectManagerRepository;
         this.colaboradorRepository = colaboradorRepository;
@@ -56,6 +57,7 @@ public class AuthService {
         this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
 
     // metodo para buscar por email (Criei um DTO para um usuário genérico a fim de facilitar)
@@ -182,6 +184,144 @@ public class AuthService {
                 );
             }
             default -> throw new RuntimeException("Tipo de usuário inválido");
+        }
+    }
+
+    // metodo de solicitar recuperação de senha
+    @Transactional
+    public String solicitarRecuperacaoSenha(String email) {
+        Optional<ProjectManager> projectManagerOptional = projectManagerRepository.findByEmail(email);
+        Optional<Cliente> clienteOptional = clienteRepository.findByEmail(email);
+        Optional<Colaborador> colaboradorOptional = colaboradorRepository.findByEmail(email);
+
+        // verificando se já existe esse email no banco de dados dos 3 tipos de usuários
+        if (
+                projectManagerOptional.isEmpty() && clienteOptional.isEmpty() && colaboradorOptional.isEmpty()
+        ) {
+            throw new ServiceException("Não foi encontrado nenhum Email!");
+        }
+
+        if (colaboradorOptional.isPresent()) {
+            Colaborador colaborador = colaboradorOptional.get();
+
+            UsuarioAutenticadoDTO usuario = buscarPorEmail(email);
+            // gerar token do usuario
+            String token = jwtService.gerarToken(usuario);
+
+            colaborador.setTokenRecuperacaoSenha(token);
+            colaborador.setExpiracaoTokenRecuperacaoSenha(
+                    LocalDateTime.now().plusMinutes(15)
+            );
+
+            colaboradorRepository.save(colaborador);
+
+            emailService.enviarEmailRecuperacaoSenha(
+                    colaborador.getEmail(),
+                    token
+            );
+        } else if (clienteOptional.isPresent()) {
+            Cliente cliente = clienteOptional.get();
+
+            UsuarioAutenticadoDTO usuario = buscarPorEmail(email);
+            // gerar token do usuario
+            String token = jwtService.gerarToken(usuario);
+
+            cliente.setTokenRecuperacaoSenha(token);
+            cliente.setExpiracaoTokenRecuperacaoSenha(
+                    LocalDateTime.now().plusMinutes(15)
+            );
+
+            clienteRepository.save(cliente);
+
+            emailService.enviarEmailRecuperacaoSenha(
+                    cliente.getEmail(),
+                    token
+            );
+        } else {
+            ProjectManager projectManager = projectManagerOptional.get();
+
+            UsuarioAutenticadoDTO usuario = buscarPorEmail(email);
+            // gerar token do usuario
+            String token = jwtService.gerarToken(usuario);
+
+            projectManager.setTokenRecuperacaoSenha(token);
+            projectManager.setExpiracaoTokenRecuperacaoSenha(
+                    LocalDateTime.now().plusMinutes(15)
+            );
+
+            projectManagerRepository.save(projectManager);
+
+            emailService.enviarEmailRecuperacaoSenha(
+                    projectManager.getEmail(),
+                    token
+            );
+        }
+
+        return "Será enviado instruções de recuperação, para o email informado";
+    }
+
+    // metodo de solicitar recuperação de senha
+    @Transactional
+    public String redefinirSenha(String token, String novaSenha) {
+        if (token == null || token.isBlank()) {
+            throw new RuntimeException("Token inválido.");
+        }
+
+        if (novaSenha == null || novaSenha.length() < 6) {
+            throw new RuntimeException("A senha deve ter pelo menos 6 caracteres.");
+        }
+
+        Optional<ProjectManager> projectManager =
+                projectManagerRepository.findByTokenRecuperacaoSenha(token);
+
+        if (projectManager.isPresent()) {
+            ProjectManager usuario = projectManager.get();
+            validarExpiracao(usuario.getExpiracaoTokenRecuperacaoSenha());
+
+            usuario.setSenha(passwordEncoder.encode(novaSenha));
+            usuario.setTokenRecuperacaoSenha(null);
+            usuario.setExpiracaoTokenRecuperacaoSenha(null);
+
+            projectManagerRepository.save(usuario);
+            return "Senha Alterada com sucesso";
+        }
+
+        Optional<Cliente> cliente =
+                clienteRepository.findByTokenRecuperacaoSenha(token);
+
+        if (cliente.isPresent()) {
+            Cliente usuario = cliente.get();
+            validarExpiracao(usuario.getExpiracaoTokenRecuperacaoSenha());
+
+            usuario.setSenha(passwordEncoder.encode(novaSenha));
+            usuario.setTokenRecuperacaoSenha(null);
+            usuario.setExpiracaoTokenRecuperacaoSenha(null);
+
+            clienteRepository.save(usuario);
+            return "Senha Alterada com sucesso";
+        }
+
+        Optional<Colaborador> colaborador =
+                colaboradorRepository.findByTokenRecuperacaoSenha(token);
+
+        if (colaborador.isPresent()) {
+            Colaborador usuario = colaborador.get();
+            validarExpiracao(usuario.getExpiracaoTokenRecuperacaoSenha());
+
+            usuario.setSenha(passwordEncoder.encode(novaSenha));
+            usuario.setTokenRecuperacaoSenha(null);
+            usuario.setExpiracaoTokenRecuperacaoSenha(null);
+
+            colaboradorRepository.save(usuario);
+            return "Senha Alterada com sucesso";
+        }
+
+        throw new RuntimeException("Token inválido.");
+    }
+
+    private void validarExpiracao(LocalDateTime expiracao) {
+        if (expiracao == null || expiracao.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expirado.");
         }
     }
 }
