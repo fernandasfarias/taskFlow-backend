@@ -34,8 +34,9 @@ public class PerfilController {
     // deleter o perfil do usuario
     // FUNCIONANDO
     @DeleteMapping("/me")
-    public void removerPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO usuarioAutenticadoDTO){
-        perfilService.removerPerfil(usuarioAutenticadoDTO.email());
+    public void removerPerfil(Authentication authentication){
+        UUID id = UUID.fromString(authentication.getName());
+        perfilService.removerPerfil(id);
     }
     // buscar dados do perfil do usuario
     //FUNCIONANDO

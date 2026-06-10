@@ -9,11 +9,14 @@ import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.entity.ProjectManager;
 import com.taskflow.api.enums.TipoUsuario;
 import com.taskflow.api.repository.*;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PerfilService {
     private final JwtService jwtService;
@@ -62,37 +65,39 @@ public class PerfilService {
         throw new RuntimeException("Usuário não encontrado");
     }
 
-    public void removerPerfil(String email){
-        var pm = projectManagerRepository.findByEmail(email);
-        if(pm.isPresent()){
-            projectManagerRepository.delete(pm.get());
+    @Transactional
+    public void removerPerfil(UUID id){
+        if(projectManagerRepository.existsById(id)){
+            projectManagerRepository.deleteById(id);
             return;
         }
-        var cliente = clienteRepository.findByEmail(email);
-        if(cliente.isPresent()){
-            clienteRepository.delete(cliente.get());
+
+
+        if (clienteRepository.existsById(id)){
+            clienteRepository.deleteById(id);
             return;
         }
-        var colaborador = colaboradorRepository.findByEmail(email);
-        if(colaborador.isPresent()){
-            colaboradorRepository.delete(colaborador.get());
+
+        if (colaboradorRepository.existsById(id)){
+            colaboradorRepository.deleteById(id);
             return;
         }
+
         throw new RuntimeException("Usuário não encontrado");
     }
 
     public PerfilDTO buscarPerfil(UUID id, String role){
         if(role.equals("ROLE_PROJECT_MANAGER")){
             ProjectManager pm = projectManagerRepository.findById(id).orElseThrow(() -> new RuntimeException("Project Manager não encontrado."));
-            return new PerfilDTO(pm.getNomeManager(), pm.getEmail(), "******");
+            return new PerfilDTO(pm.getNomeManager(), pm.getEmail(), "******", TipoUsuario.PROJECT_MANAGER);
         }
         if(role.equals("ROLE_CLIENTE")){
             Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-            return new PerfilDTO(cliente.getNomeCliente(), cliente.getEmail(), "******");
+            return new PerfilDTO(cliente.getNomeCliente(), cliente.getEmail(), "******", TipoUsuario.CLIENTE);
         }
         if(role.equals("ROLE_COLABORADOR")){
             Colaborador col = colaboradorRepository.findById(id).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
-            return new PerfilDTO(col.getNome(), col.getEmail(), "******");
+            return new PerfilDTO(col.getNome(), col.getEmail(), "******", TipoUsuario.COLABORADOR);
         }
         throw new RuntimeException("Tipo de usuário inválido");
     }
