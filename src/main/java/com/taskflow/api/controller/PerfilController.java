@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import java.util.List;
 
@@ -25,8 +27,9 @@ public class PerfilController {
     // editar o perfil do usuario: enpoint profile/id
     // FUNCIONANDO
     @PutMapping("/me")
-    public void atualizarPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO usuario, @RequestBody AtualizarPerfilDTO dto){
-        perfilService.atualizarPerfil(usuario.email(), dto);
+    public void atualizarPerfil(Authentication authentication, @RequestBody AtualizarPerfilDTO dto){
+        UUID id = UUID.fromString(authentication.getName());
+        perfilService.atualizar(id, dto);
     }
     // deleter o perfil do usuario
     // FUNCIONANDO
@@ -37,9 +40,10 @@ public class PerfilController {
     // buscar dados do perfil do usuario
     //FUNCIONANDO
     @GetMapping("/me")
-    public PerfilDTO getPerfil(@AuthenticationPrincipal UsuarioAutenticadoDTO user, Authentication authentication){
+    public PerfilDTO getPerfil(Authentication authentication){
+        String id = authentication.getName();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
-        return perfilService.buscarPerfil(user.email(), role);
+        return perfilService.buscarPerfil(UUID.fromString(id), role);
     }
 
     // CERTIFICACAO

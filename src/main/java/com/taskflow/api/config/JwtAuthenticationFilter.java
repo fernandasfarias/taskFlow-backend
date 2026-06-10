@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        String path = request.getServletPath();
+        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/swagger-ui.html")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -51,13 +57,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (jwtService.validarToken(token)) {
 
-            String email = jwtService.extrairEmail(token);
+            String email = jwtService.extrairEmail(token); // extrairEmail == extrairId
             String role = jwtService.extrairRole(token);
 
-            UsuarioAutenticadoDTO usuario = authService.buscarPorEmail(email);
-
+            //UsuarioAutenticadoDTO usuario = authService.buscarPorEmail(email);
+            String userId = jwtService.extrairEmail(token);
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(usuario, null, List.of(
+                    new UsernamePasswordAuthenticationToken(userId, null, List.of(
                             new SimpleGrantedAuthority(
                                     "ROLE_" + role
                             )

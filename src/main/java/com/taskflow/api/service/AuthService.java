@@ -3,11 +3,6 @@ package com.taskflow.api.service;
 import com.taskflow.api.dto.*;
 
 import com.taskflow.api.enums.TipoUsuario;
-import com.taskflow.api.repository.CertificacaoRepository;
-import com.taskflow.api.repository.EspecialidadeRepository;
-import com.taskflow.api.repository.EmpresaRepository;
-import com.taskflow.api.repository.ProjectManagerRepository;
-
 import com.taskflow.api.entity.*;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.stereotype.Service;
@@ -21,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import javax.management.RuntimeErrorException;
 
 import com.taskflow.api.service.JwtService;
 
@@ -60,7 +57,7 @@ public class AuthService {
         this.emailService = emailService;
     }
 
-    // metodo para buscar por email (Criei um DTO para um usuário genérico a fim de facilitar)
+    // metodo para buscar por email
     public UsuarioAutenticadoDTO buscarPorEmail(String email){
 
         // verificando se o usuário é do tipo ProjectManager
@@ -105,6 +102,29 @@ public class AuthService {
         throw new RuntimeException("Usuário não encontrado");
     }
 
+    // buscar por id
+    public UsuarioAutenticadoDTO buscarPorId(UUID id){
+
+        var pm = projectManagerRepository.findById(id);
+        if (pm.isPresent()){
+        ProjectManager p = pm.get();
+        return new UsuarioAutenticadoDTO(p.getIdManager(),p.getNomeManager(),p.getEmail(),p.getSenha(),TipoUsuario.PROJECT_MANAGER);
+        }
+
+        var cliente = clienteRepository.findById(id);
+        if (cliente.isPresent()){
+            Cliente c = cliente.get();
+            return new UsuarioAutenticadoDTO(c.getIdCliente(),c.getNomeCliente(),c.getEmail(),c.getSenha(),TipoUsuario.CLIENTE);
+        }
+
+        var colab = colaboradorRepository.findById(id);
+        if (colab.isPresent()){
+            Colaborador c = colab.get();
+            return new UsuarioAutenticadoDTO(c.getIdColaborador(),c.getNome(),c.getEmail(),c.getSenha(),TipoUsuario.COLABORADOR);
+        }
+        throw new RuntimeException("Usuário não encontrado");
+    }
+    
     // metodo de login
     public LoginResponseDTO login(LoginDTO dto){
         UsuarioAutenticadoDTO usuario = buscarPorEmail(dto.email());

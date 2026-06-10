@@ -1,11 +1,13 @@
 package com.taskflow.api.service;
 
 import com.taskflow.api.dto.AtualizarPerfilDTO;
+import com.taskflow.api.dto.AuthResponseDTO;
 import com.taskflow.api.dto.PerfilDTO;
 import com.taskflow.api.dto.UsuarioAutenticadoDTO;
 import com.taskflow.api.entity.Cliente;
 import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.entity.ProjectManager;
+import com.taskflow.api.enums.TipoUsuario;
 import com.taskflow.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,20 +16,19 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PerfilService {
+    private final JwtService jwtService;
     private final ProjectManagerRepository projectManagerRepository;
     private final ClienteRepository clienteRepository;
     private final ColaboradorRepository colaboradorRepository;
 
     // atualizar dados do perfil
-    public void atualizarPerfil(String email, AtualizarPerfilDTO dto) {
-
-        System.out.println("EMAIL RECEBIDO: " + email);
+    public void atualizar(UUID id, AtualizarPerfilDTO dto) {
         if (dto.getNome() == null && dto.getEmail() == null && dto.getSenha() == null) {
             throw new RuntimeException("Nada para atualizar");
         }
 
-        if (projectManagerRepository.findByEmail(email).isPresent()) {
-            var pm = projectManagerRepository.findByEmail(email).get();
+        if (projectManagerRepository.findById(id).isPresent()) {
+            var pm = projectManagerRepository.findById(id).get();
 
             if (dto.getNome() != null) pm.setNomeManager(dto.getNome());
             if (dto.getEmail() != null) pm.setEmail(dto.getEmail());
@@ -37,8 +38,8 @@ public class PerfilService {
             return;
         }
 
-        if (clienteRepository.findByEmail(email).isPresent()) {
-            var cliente = clienteRepository.findByEmail(email).get();
+        if (clienteRepository.findById(id).isPresent()) {
+            var cliente = clienteRepository.findById(id).get();
 
             if (dto.getNome() != null) cliente.setNomeCliente(dto.getNome());
             if (dto.getEmail() != null) cliente.setEmail(dto.getEmail());
@@ -48,8 +49,8 @@ public class PerfilService {
             return;
         }
 
-        if (colaboradorRepository.findByEmail(email).isPresent()) {
-            var colaborador = colaboradorRepository.findByEmail(email).get();
+        if (colaboradorRepository.findById(id).isPresent()) {
+            var colaborador = colaboradorRepository.findById(id).get();
 
             if (dto.getNome() != null) colaborador.setNome(dto.getNome());
             if (dto.getEmail() != null) colaborador.setEmail(dto.getEmail());
@@ -80,22 +81,19 @@ public class PerfilService {
         throw new RuntimeException("Usuário não encontrado");
     }
 
-    public PerfilDTO buscarPerfil(String email, String role){
+    public PerfilDTO buscarPerfil(UUID id, String role){
         if(role.equals("ROLE_PROJECT_MANAGER")){
-            ProjectManager pm = projectManagerRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Project Manager não encontrado."));
+            ProjectManager pm = projectManagerRepository.findById(id).orElseThrow(() -> new RuntimeException("Project Manager não encontrado."));
             return new PerfilDTO(pm.getNomeManager(), pm.getEmail(), "******");
         }
         if(role.equals("ROLE_CLIENTE")){
-            Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+            Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
             return new PerfilDTO(cliente.getNomeCliente(), cliente.getEmail(), "******");
         }
         if(role.equals("ROLE_COLABORADOR")){
-            Colaborador col = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+            Colaborador col = colaboradorRepository.findById(id).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
             return new PerfilDTO(col.getNome(), col.getEmail(), "******");
         }
-
-
-
         throw new RuntimeException("Tipo de usuário inválido");
     }
 }

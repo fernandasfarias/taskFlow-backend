@@ -2,6 +2,7 @@ package com.taskflow.api.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class JwtService {
     // metodo para gerar token
     public String gerarToken(UsuarioAutenticadoDTO usuario){
         return Jwts.builder()
-                .subject(usuario.email()) // identifica o usuario (email)
+                .subject(usuario.id().toString())
                 .claim("role", usuario.tipo().name()) // papel do usuario (CLIENTE, COLABORADOR ou PM)
                 .issuedAt(new Date()) // momento em que o token foi gerado
                 .expiration(new Date(System.currentTimeMillis() + 86400000)) // data de expiração (24h)
