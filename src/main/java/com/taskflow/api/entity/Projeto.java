@@ -35,6 +35,8 @@ public class Projeto {
     @Column(nullable = false)
     private Float orcamento;
 
+
+
     // relação N:1 entre Projeto e Project Manager
     @ManyToOne
     @JoinColumn(name = "id_manager", nullable = false)
@@ -65,5 +67,65 @@ public class Projeto {
     // para acessar todas as mensagens de um projeto
     @OneToMany(mappedBy = "projeto")
     private List<Mensagem> mensagens;
+
+        public UUID getId() {
+        return idProjeto;
+    }
+    public String getNome() {
+        return nomeProjeto;
+    }
+    public String getDescricao() {
+        return descricao;   
+    }
+    public LocalDate getDataInicio() {
+        return dataInicio;
+    }
+    public LocalDate getDataEntrega() {
+        return dataEntrega;
+    }
+    public Float getOrcamento() {
+        return orcamento;
+    }
+    public UUID getIdManager() {
+        return projectManager.getIdManager();
+    }
+
+    public List<Cliente> getClientes() {
+    return this.clientes;
+    }
+    
+    public List<Colaborador> getColaboradores() {
+    return this.colaboradores;
+    }
+
+    public void setClientes(List<Cliente> clientes) {
+        this.clientes = clientes;
+    }
+
+    public void setColaboradores(List<Colaborador> colaboradores) {
+        this.colaboradores = colaboradores;
+    }
+    public void setProjectManager(ProjectManager projectManager) {
+        this.projectManager = projectManager;
+    }
+
+    public void setId(UUID idProjeto) {
+        this.idProjeto = idProjeto;
+    }
+    public void setNome(String nomeProjeto) {
+        this.nomeProjeto = nomeProjeto;
+    }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+    public void setDataInicio(LocalDate dataInicio) {
+        this.dataInicio = dataInicio;                   
+    }
+    public void setDataEntrega(LocalDate dataEntrega) {
+        this.dataEntrega = dataEntrega;
+    }
+    public void setOrcamento(Float orcamento) {
+        this.orcamento = orcamento;
+    }
 
 }
