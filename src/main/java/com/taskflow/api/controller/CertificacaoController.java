@@ -1,6 +1,7 @@
 package com.taskflow.api.controller;
 
 import com.taskflow.api.service.CertificacaoService;
+import com.taskflow.api.service.JwtService; 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +14,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping("/onboarding/certificacoes")
 public class CertificacaoController {
+
     private final CertificacaoService certificacaoService;
-    @PostMapping("/{idManager}")
-    public void adicionarCertificacoes(@PathVariable UUID idManager, @RequestBody List<CertificacaoDTO> dtos) {
+    private final JwtService jwtService;
+
+    @PostMapping
+    public void adicionarCertificacoes(@RequestHeader("Authorization") String authHeader, @RequestBody List<CertificacaoDTO> dtos) {
+       
+        String token = authHeader.substring(7);
+        String IdExtraido = jwtService.extrairEmail(token);
+        UUID idManager = UUID.fromString(IdExtraido);
+
         certificacaoService.adicionar(idManager, dtos);
+
     }
 }
