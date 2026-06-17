@@ -43,12 +43,26 @@ public class ProjetoService {
             throw new RuntimeException("Acesso negado: Você não é o gerente deste projeto.");
         }
 
-        //atualiza os dados
-        projeto.setNome(dto.nome());
-        projeto.setDescricao(dto.descricao());
-        projeto.setDataInicio(dto.dataInicio());
-        projeto.setDataEntrega(dto.dataEntrega());
-        projeto.setOrcamento(dto.orcamento());
+        //atualiza somente os campos que foram preenchidos
+        if (dto.nome() != null) {
+            projeto.setNome(dto.nome());
+        }
+
+        if (dto.descricao() != null) {
+            projeto.setDescricao(dto.descricao());
+        }
+
+        if (dto.dataInicio() != null) {
+            projeto.setDataInicio(dto.dataInicio());
+        }
+
+        if (dto.dataEntrega() != null) {
+            projeto.setDataEntrega(dto.dataEntrega());
+        }
+
+        if (dto.orcamento() != null) {
+            projeto.setOrcamento(dto.orcamento());
+        }
 
         projetoRepository.save(projeto);
     }
@@ -73,13 +87,6 @@ public class ProjetoService {
     // Busca todos os projetos onde o ID do gerente seja igual ao logado
     return projetoRepository.findByProjectManagerIdManager(idManagerLogado);
     }
-
-
-    
-   // public ProjetoDTO mostrarProjetoPorNome(String nome) {
-    //    var projeto = projetoRepository.findByNomeProjeto(nome).orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
-    //    return new ProjetoDTO(projeto.getId(), projeto.getNome(), projeto.getDescricao(), projeto.getDataInicio(), projeto.getDataEntrega(), projeto.getOrcamento(), projeto.getIdManager());
-   // }
 
    public Projeto mostrarProjetoPorNome(String nome) {
     return projetoRepository.findByNomeProjeto(nome) 

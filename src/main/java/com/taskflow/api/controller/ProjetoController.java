@@ -22,26 +22,25 @@ public class ProjetoController {
     private final ProjetoService projetoService;
 
     //editar projeto
-    //funcionando
+    // FUNCIONANDO
      @PutMapping("/{id}")
     public void atualizarProjeto(@PathVariable UUID id, @RequestBody ProjetoDTO dto, Authentication authentication) {
         // Pega o ID do gerente conectado pelo Token
         UUID idManagerLogado = UUID.fromString(authentication.getName());
-        
         // Passa o ID do projeto, os dados e o ID do dono para validação
         projetoService.editarProjeto(id, dto, idManagerLogado);
     }
  
     //deletar projeto
-    //funcionando
+    // FUNCIONANDO
     @DeleteMapping("/{id}")
     public void deletarProjeto(@PathVariable UUID id, Authentication authentication){
         UUID idManagerLogado = UUID.fromString(authentication.getName());
         projetoService.deletarProjeto(id, idManagerLogado);
     }
 
-
     //buscar projeto por nome
+    // FUNCIONANDO
     @GetMapping("/buscar")
     public ProjetoDTO buscarPorNome(@RequestParam String nome) {
     // 1. O service busca a entidade Projeto pura do banco
@@ -61,6 +60,7 @@ public class ProjetoController {
     );
     }
 
+    // FUNCIONANDO
     @GetMapping
     public List<ProjetoDTO> listarTodosMeusProjetos(Authentication authentication) {
     //ID do gerente logado
@@ -88,6 +88,7 @@ public class ProjetoController {
      }
 
      //buscar projeto por id
+     // FUNCIONANDO 
     @GetMapping("/{id}")
     public ProjetoDTO buscarPorId(@PathVariable UUID id) {
     Projeto projetoEncontrado = projetoService.mostrarProjetoPorId(id);
@@ -104,22 +105,17 @@ public class ProjetoController {
     );
     }
 
-
     //criar projeto
-    //funcionando
-    @PostMapping
+    // FUNCIONANDO
+    @PostMapping("/criar")
     public void criarProjeto(@RequestBody ProjetoDTO dto, Authentication authentication) {
-   
-
         UUID idManager = UUID.fromString(authentication.getName());
-        
         // Executa o seu service normalmente
         projetoService.criarProjeto(dto, idManager);
-        
- 
     }
 
     //associar projeto a cliente
+    // FUNCIONANDO
     @PostMapping("/{idProjeto}/cliente/{idCliente}")
     public void associarProjetoACliente(@PathVariable UUID idProjeto, @PathVariable UUID idCliente, Authentication authentication) {
         UUID idManagerLogado = UUID.fromString(authentication.getName());
@@ -127,6 +123,7 @@ public class ProjetoController {
     }
 
     //deletar associação projeto-cliente
+    // FUNCIONANDO
     @DeleteMapping("/{idProjeto}/cliente/{idCliente}")
     public void deletarClienteDeProjeto(@PathVariable UUID idProjeto, @PathVariable UUID idCliente, Authentication authentication) {
         UUID idManagerLogado = UUID.fromString(authentication.getName());
@@ -134,15 +131,16 @@ public class ProjetoController {
     }
 
     //listar clientes de um projeto
+    // FUNCIONANDO
     @GetMapping("/{idProjeto}/clientes")
     public List<Cliente> listarClientesDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) {
     UUID idManagerLogado = UUID.fromString(authentication.getName());
-    
     // Retorna direto
     return projetoService.listarClientesDeProjeto(idProjeto, idManagerLogado);  
     }
 
     //associar projeto a colaborador
+    // FUNCIONANDO
     @PostMapping("/{idProjeto}/colaborador/{idColaborador}")
     public void associarProjetoAColaborador(@PathVariable UUID idProjeto, @PathVariable UUID idColaborador, Authentication authentication) {
         UUID idManagerLogado = UUID.fromString(authentication.getName());
@@ -150,6 +148,7 @@ public class ProjetoController {
     }
 
     //deletar associação projeto-colaborador
+    // FUNCIONANDO
     @DeleteMapping("/{idProjeto}/colaborador/{idColaborador}")
     public void deletarColaboradorDeProjeto(@PathVariable UUID idProjeto, @PathVariable UUID idColaborador, Authentication authentication) {
         UUID idManagerLogado = UUID.fromString(authentication.getName());
@@ -157,10 +156,10 @@ public class ProjetoController {
     }
 
     //listar colaboradores de um projeto
+    // FUNCIONANDO
     @GetMapping("/{idProjeto}/colaboradores")
     public List<Colaborador> listarColaboradoresDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) { 
     UUID idManagerLogado = UUID.fromString(authentication.getName());
-    
     // Retorna direto
     return projetoService.listarColaboradoresDeProjeto(idProjeto, idManagerLogado);  
     }
