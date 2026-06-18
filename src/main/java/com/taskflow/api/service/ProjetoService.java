@@ -30,8 +30,6 @@ public class ProjetoService {
     private final ClienteRepository clienteRepository;
     private final ColaboradorRepository colaboradorRepository;
 
-
-
     //atualizar projeto
     public void editarProjeto(UUID idProjeto, ProjetoDTO dto, UUID idManagerLogado) {
         // 1. Busca o projeto no banco
@@ -101,7 +99,7 @@ public class ProjetoService {
 
 
     //criar projeto
-    public void criarProjeto(ProjetoDTO dto, UUID idManager) {
+    public Projeto criarProjeto(ProjetoDTO dto, UUID idManager) {
      var projeto = new Projeto();
      projeto.setNome(dto.nome());
      projeto.setDescricao(dto.descricao());
@@ -113,7 +111,7 @@ public class ProjetoService {
      ProjectManager manager = projectManagerRepository.getReferenceById(idManager);
     projeto.setProjectManager(manager);
     
-    projetoRepository.save(projeto);
+    return projetoRepository.save(projeto);
     }
 
     //associar projeto a cliente
@@ -206,7 +204,7 @@ public class ProjetoService {
     }
 
      //listar colaboradores de um projeto
-     public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idManagerLogado) {
+    public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idManagerLogado) {
         // 1. Busca o projeto no banco
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
@@ -214,8 +212,17 @@ public class ProjetoService {
             throw new RuntimeException("Acesso negado");
         }
         return projeto.getColaboradores();
-     }
+    }
 
+     // LISTAR TODOS OS CLIENTES
+    public List<Cliente> listarTodosClientes(){
+        return clienteRepository.findAll();
+    }
+
+     // LISTAR TODOS OS COLABORADORES
+    public List<Colaborador> listarTodosColaboradores(){
+        return colaboradorRepository.findAll();
+    }
 }
         
 

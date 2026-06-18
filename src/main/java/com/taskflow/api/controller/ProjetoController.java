@@ -14,6 +14,9 @@ import com.taskflow.api.dto.CertificacaoDTO;
 
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/projetos")
@@ -108,10 +111,22 @@ public class ProjetoController {
     //criar projeto
     // FUNCIONANDO
     @PostMapping("/criar")
-    public void criarProjeto(@RequestBody ProjetoDTO dto, Authentication authentication) {
+    public ProjetoDTO criarProjeto(@RequestBody ProjetoDTO dto, Authentication authentication) {
         UUID idManager = UUID.fromString(authentication.getName());
         // Executa o seu service normalmente
-        projetoService.criarProjeto(dto, idManager);
+        Projeto projeto = projetoService.criarProjeto(dto, idManager);
+
+        return new ProjetoDTO(
+            projeto.getId(),
+            projeto.getNome(),
+            projeto.getDescricao(),
+            projeto.getDataInicio(),
+            projeto.getDataEntrega(),
+            projeto.getOrcamento(),
+            projeto.getIdManager(),
+            List.of(),
+            List.of()
+        );
     }
 
     //associar projeto a cliente
@@ -164,4 +179,17 @@ public class ProjetoController {
     return projetoService.listarColaboradoresDeProjeto(idProjeto, idManagerLogado);  
     }
 
+    // listar TODOS OS CLIENTES
+    @GetMapping("/clientes")
+    public List<Cliente> listarClientes() {
+        return projetoService.listarTodosClientes();
+    }
+
+    // listar TODOS OS COLABORADORES
+    @GetMapping("/colaboradores")
+    public List<Colaborador> listarColaboradores() {
+        return projetoService.listarTodosColaboradores();
+    }
+    
+    
 }
