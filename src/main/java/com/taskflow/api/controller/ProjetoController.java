@@ -7,22 +7,24 @@ import com.taskflow.api.dto.ProjetoDTO;
 import com.taskflow.api.entity.Cliente;
 import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.entity.Projeto;
-import java.util.Collections;
-import org.springframework.security.core.Authentication;
+import com.taskflow.api.repository.ClienteRepository;
+import com.taskflow.api.repository.ColaboradorRepository;
 
-import com.taskflow.api.dto.CertificacaoDTO;
+import java.util.Collections;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/projetos")
 @RequiredArgsConstructor
 public class ProjetoController {
     private final ProjetoService projetoService;
+    private final ColaboradorRepository colaboradorRepository;
+    private final ClienteRepository clienteRepository;
 
     //editar projeto
     // FUNCIONANDO
@@ -180,16 +182,26 @@ public class ProjetoController {
     }
 
     // listar TODOS OS CLIENTES
+    // FUNCIONANDO
     @GetMapping("/clientes")
     public List<Cliente> listarClientes() {
         return projetoService.listarTodosClientes();
     }
 
     // listar TODOS OS COLABORADORES
+    // FUNCIONANDO
     @GetMapping("/colaboradores")
     public List<Colaborador> listarColaboradores() {
         return projetoService.listarTodosColaboradores();
     }
     
-    
+    // BUSCA ÚNICA POR EMAIL
+    @GetMapping("/usuarios/email")
+    public ResponseEntity<?> buscarPorEmail(@RequestParam String email) {
+        Object usuario = projetoService.buscarUsuarioPorEmail(email);
+        if (usuario == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuario);
+    }
 }

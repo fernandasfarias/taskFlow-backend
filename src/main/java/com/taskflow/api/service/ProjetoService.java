@@ -20,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -222,6 +224,24 @@ public class ProjetoService {
      // LISTAR TODOS OS COLABORADORES
     public List<Colaborador> listarTodosColaboradores(){
         return colaboradorRepository.findAll();
+    }
+
+    // BUSCAR POR EMAIL
+    public Object buscarUsuarioPorEmail(String email) {
+        Optional<Colaborador> colaborador =
+                colaboradorRepository.findByEmail(email);
+
+        if (colaborador.isPresent()) {
+            return colaborador.get();
+        }
+
+        Optional<Cliente> cliente =
+                clienteRepository.findByEmail(email);
+
+        if (cliente.isPresent()) {
+            return cliente.get();
+        }
+        return null;
     }
 }
         
