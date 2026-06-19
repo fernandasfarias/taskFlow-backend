@@ -84,13 +84,13 @@ public class ProjetoService {
     }
 
     public List<Projeto> listarProjetos(UUID idManagerLogado) {
-    // Busca todos os projetos onde o ID do gerente seja igual ao logado
-    return projetoRepository.findByProjectManagerIdManager(idManagerLogado);
+        // Busca todos os projetos onde o ID do gerente seja igual ao logado
+        return projetoRepository.findByProjectManagerIdManager(idManagerLogado);
     }
 
-   public Projeto mostrarProjetoPorNome(String nome) {
-    return projetoRepository.findByNomeProjeto(nome) 
-        .orElseThrow(() -> new RuntimeException("Projeto não encontrado com o nome: " + nome));
+    public Projeto mostrarProjetoPorNome(String nome) {
+        return projetoRepository.findByNomeProjeto(nome) 
+            .orElseThrow(() -> new RuntimeException("Projeto não encontrado com o nome: " + nome));
     }
 
     public Projeto mostrarProjetoPorId(UUID id) {
@@ -102,18 +102,18 @@ public class ProjetoService {
 
     //criar projeto
     public Projeto criarProjeto(ProjetoDTO dto, UUID idManager) {
-     var projeto = new Projeto();
-     projeto.setNome(dto.nome());
-     projeto.setDescricao(dto.descricao());
-     projeto.setDataInicio(dto.dataInicio());
-     projeto.setDataEntrega(dto.dataEntrega());
-     projeto.setOrcamento(dto.orcamento());
-    
-     // idManager que veio do controller
-     ProjectManager manager = projectManagerRepository.getReferenceById(idManager);
-    projeto.setProjectManager(manager);
-    
-    return projetoRepository.save(projeto);
+        var projeto = new Projeto();
+        projeto.setNome(dto.nome());
+        projeto.setDescricao(dto.descricao());
+        projeto.setDataInicio(dto.dataInicio());
+        projeto.setDataEntrega(dto.dataEntrega());
+        projeto.setOrcamento(dto.orcamento());
+        
+        // idManager que veio do controller
+        ProjectManager manager = projectManagerRepository.getReferenceById(idManager);
+        projeto.setProjectManager(manager);
+        
+        return projetoRepository.save(projeto);
     }
 
     //associar projeto a cliente
