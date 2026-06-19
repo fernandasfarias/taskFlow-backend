@@ -18,10 +18,14 @@ public class EspecialidadeService {
     private final ColaboradorRepository colaboradorRepository;
     private final EspecialidadeRepository especialidadeRepository;
 
-    // metodo utilizado no cadastro do colaborador: adicionar uma ou mais especialidades.
     @Transactional
     public void adicionar(UUID id, List<EspecialidadeDTO> dtos) {
         Colaborador col = colaboradorRepository.findById(id).orElseThrow(() -> new RuntimeException("Colaborador não encontrado"));
+
+        // 👇 A CORREÇÃO ENTRA AQUI: Garante que a lista não é nula antes de usá-la
+        if (col.getEspecialidades() == null) {
+            col.setEspecialidades(new ArrayList<>());
+        }
 
         for (EspecialidadeDTO dto : dtos) {
             String nome = dto.nomeEspecialidade().trim().toLowerCase();
@@ -39,20 +43,25 @@ public class EspecialidadeService {
         colaboradorRepository.save(col);
     }
 
-    // metodo utilizado na tela de perfil: remover especialidade
     @Transactional
     public void removerEspecialidade(String email, UUID idEspecialidade){
         Colaborador colaborador = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("colaborador não encontrado."));
         Especialidade especialidade = especialidadeRepository.findById(idEspecialidade).orElseThrow(() -> new RuntimeException("especialidade não encontrada."));
 
-        colaborador.getEspecialidades().removeIf(e -> e.getIdEspecialidade().equals(especialidade.getIdEspecialidade()));
-        colaboradorRepository.save(colaborador);
+        if (colaborador.getEspecialidades() != null) {
+            colaborador.getEspecialidades().removeIf(e -> e.getIdEspecialidade().equals(especialidade.getIdEspecialidade()));
+            colaboradorRepository.save(colaborador);
+        }
     }
 
-    // metodo utilizado na tela de perfil: adicionar uma especialidade por vez
     @Transactional
     public void adicionarEspecialidade(String email, EspecialidadeDTO dto){
         Colaborador colaborador = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("colaborador não encontrado"));
+
+        // 👇 Prevenção também adicionada aqui para evitar erros futuros no Perfil
+        if (colaborador.getEspecialidades() == null) {
+            colaborador.setEspecialidades(new ArrayList<>());
+        }
 
         Especialidade especialidade = new Especialidade();
         especialidade.setNomeEspecialidade(dto.nomeEspecialidade());
@@ -62,9 +71,13 @@ public class EspecialidadeService {
         colaboradorRepository.save(colaborador);
     }
 
-    // metodo utilizado na tela de perfil: listar especialidades
     public List<EspecialidadeDTO> listarEspecialidades(String email){
         Colaborador col = colaboradorRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+        
+        if (col.getEspecialidades() == null) {
+            return new ArrayList<>();
+        }
+        
         return col.getEspecialidades().stream().map(esp -> new EspecialidadeDTO(esp.getNomeEspecialidade())).toList();
     }
 }
