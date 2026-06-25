@@ -41,7 +41,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
-                                "/error").permitAll()
+                                "/error",
+                                "/api/dashboard/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
