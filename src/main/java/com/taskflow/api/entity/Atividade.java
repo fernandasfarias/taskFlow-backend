@@ -10,6 +10,8 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 @Table(name = "atividade", schema="projetos")
 public class Atividade {
 
@@ -41,6 +43,6 @@ public class Atividade {
 
     // relação N:1 entre Atividade e Milestone
     @ManyToOne
-    @JoinColumn(name = "id_milestone", nullable = false)
+    @JoinColumn(name = "id_milestone", nullable = true)
     private Milestone milestone;
 }
