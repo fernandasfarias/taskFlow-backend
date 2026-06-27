@@ -1,5 +1,6 @@
 package com.taskflow.api.service;
 
+import com.taskflow.api.dto.AssociarColaboradorAtividadeDTO;
 import com.taskflow.api.dto.AtividadeRequestDTO;
 import com.taskflow.api.dto.AtividadeResponseDTO;
 import com.taskflow.api.entity.Atividade;
@@ -73,6 +74,13 @@ public class AtividadeService {
                 atividade.getMilestone() != null
                         ? atividade.getMilestone().getIdMilestone()
                         : null
+        );
+    }
+
+    public void associarColaborador(AssociarColaboradorAtividadeDTO dto) {
+        atividadeRepository.associar(
+                dto.idColaborador(),
+                dto.idAtividade()
         );
     }
 }
