@@ -1,11 +1,14 @@
 package com.taskflow.api.service;
 
+import com.taskflow.api.dto.AssociarColaboradorTarefaDTO;
 import com.taskflow.api.dto.CriarTarefaDTO;
 import com.taskflow.api.dto.TarefaRequestDTO;
 import com.taskflow.api.dto.TarefaResponseDTO;
 import com.taskflow.api.entity.Atividade;
+import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.entity.Tarefa;
 import com.taskflow.api.repository.AtividadeRepository;
+import com.taskflow.api.repository.ColaboradorRepository;
 import com.taskflow.api.repository.TarefaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,12 @@ public class TarefaService {
 
     private final TarefaRepository tarefaRepository;
 
+    private final ColaboradorRepository colaboradorRepository;
+
     private final AtividadeRepository atividadeRepository;
 
     @Transactional
-    public void criar(UUID idAtividade, CriarTarefaDTO dto) {
+    public TarefaResponseDTO criar(UUID idAtividade, CriarTarefaDTO dto) {
 
         Atividade atividade = atividadeRepository.findById(idAtividade)
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
@@ -37,6 +42,14 @@ public class TarefaService {
         tarefa.setAtividade(atividade);
 
         tarefaRepository.save(tarefa);
+
+        return new TarefaResponseDTO(
+                tarefa.getIdTarefa(),
+                tarefa.getNomeTarefa(),
+                tarefa.getDataInicio(),
+                tarefa.getDataEntrega(),
+                tarefa.getStatusTarefa()
+        );
     }
 
     @Transactional
@@ -83,6 +96,14 @@ public class TarefaService {
                 tarefa.getDataEntrega(),
                 tarefa.getStatusTarefa()
         );
+    }
+
+    @Transactional
+    public void associarColaborador(AssociarColaboradorTarefaDTO dto) {
+       tarefaRepository.associar(
+               dto.idColaborador(),
+               dto.idTarefa()
+       );
     }
 
 }

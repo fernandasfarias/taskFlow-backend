@@ -1,5 +1,6 @@
 package com.taskflow.api.controller;
 
+import com.taskflow.api.dto.AssociarColaboradorTarefaDTO;
 import com.taskflow.api.dto.CriarTarefaDTO;
 import com.taskflow.api.dto.TarefaRequestDTO;
 import com.taskflow.api.dto.TarefaResponseDTO;
@@ -18,12 +19,12 @@ public class TarefaController {
     private final TarefaService tarefaService;
 
     @PostMapping("/{idAtividade}/tarefas")
-    public ResponseEntity<Void> criar(
+    public ResponseEntity<TarefaResponseDTO> criar(
             @PathVariable UUID idAtividade,
             @RequestBody CriarTarefaDTO dto
     ) {
-        tarefaService.criar(idAtividade, dto);
-        return ResponseEntity.ok().build();
+        TarefaResponseDTO tarefa = tarefaService.criar(idAtividade, dto);
+        return ResponseEntity.ok(tarefa);
     }
 
     @DeleteMapping("/deletar-tarefa/{idTarefa}")
@@ -47,4 +48,11 @@ public class TarefaController {
         return ResponseEntity.ok(tarefaService.editar(idTarefa, request));
     }
 
+    @PostMapping("/tarefa/associar-colaborador")
+    public ResponseEntity<Void> associarColaborador(
+            @RequestBody AssociarColaboradorTarefaDTO dto
+    ) {
+        tarefaService.associarColaborador(dto);
+        return ResponseEntity.ok().build();
+    }
 }
