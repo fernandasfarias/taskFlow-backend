@@ -3,6 +3,7 @@ package com.taskflow.api.controller;
 import com.taskflow.api.dto.AssociarColaboradorAtividadeDTO;
 import com.taskflow.api.dto.AtividadeRequestDTO;
 import com.taskflow.api.dto.AtividadeResponseDTO;
+import com.taskflow.api.dto.AtualizarAtividadeDTO;
 import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.service.AtividadeService;
 import com.taskflow.api.service.ProjetoService;
@@ -53,4 +54,14 @@ public class AtividadeController {
     public void deletar(@PathVariable UUID idAtividade) {
         atividadeService.deletar(idAtividade);
     }
+
+    @PutMapping("/{idAtividade}")
+    public ResponseEntity<Void> atualizar(
+            @PathVariable UUID idAtividade,
+            @RequestBody AtualizarAtividadeDTO dto
+    ) {
+        atividadeService.atualizar(idAtividade, dto);
+        return ResponseEntity.noContent().build();
+    }
+
 }

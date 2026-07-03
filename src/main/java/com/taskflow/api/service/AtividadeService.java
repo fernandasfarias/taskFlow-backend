@@ -1,13 +1,12 @@
 package com.taskflow.api.service;
 
-import com.taskflow.api.dto.AssociarColaboradorAtividadeDTO;
-import com.taskflow.api.dto.AtividadeRequestDTO;
-import com.taskflow.api.dto.AtividadeResponseDTO;
+import com.taskflow.api.dto.*;
 import com.taskflow.api.entity.Atividade;
 import com.taskflow.api.entity.Milestone;
 import com.taskflow.api.entity.Projeto;
 import com.taskflow.api.repository.AtividadeRepository;
 import com.taskflow.api.repository.ProjetoRepository;
+import com.taskflow.api.repository.TarefaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,7 @@ public class AtividadeService {
 
     private final AtividadeRepository atividadeRepository;
     private final ProjetoRepository projetoRepository;
+    private final TarefaRepository tarefaRepository;
 
     public AtividadeResponseDTO criar(AtividadeRequestDTO dto) {
         Projeto projeto = projetoRepository.findById(dto.idProjeto())
@@ -81,6 +81,61 @@ public class AtividadeService {
         atividadeRepository.associar(
                 dto.idColaborador(),
                 dto.idAtividade()
+        );
+    }
+
+    public void atualizar(UUID id, AtualizarAtividadeDTO dto) {
+        Atividade atividade = atividadeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+        atividade.setNomeAtividade(dto.nomeAtividade());
+        atividade.setDescricaoAtividade(dto.descricaoAtividade());
+        atividade.setDataInicio(dto.dataInicio());
+        atividade.setDataEntrega(dto.dataEntrega());
+        atividade.setStatusAtividade(dto.statusAtividade());
+
+        atividadeRepository.save(atividade);
+    }
+
+    public AtividadeDetalhesDTO buscarDetalhes(UUID idAtividade) {
+        Atividade atividadeEntity = atividadeRepository.findById(idAtividade)
+                .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+        AtividadeResponseDTO atividade = new AtividadeResponseDTO(
+                atividadeEntity.getIdAtividade(),
+                atividadeEntity.getNomeAtividade(),
+                atividadeEntity.getDescricaoAtividade(),
+                atividadeEntity.getDataInicio(),
+                atividadeEntity.getDataEntrega(),
+                atividadeEntity.getStatusAtividade(),
+                atividadeEntity.getProjeto().getIdProjeto(),
+                atividadeEntity.getMilestone() != null
+                        ? atividadeEntity.getMilestone().getIdMilestone()
+                        : null
+        );
+
+        List<TarefaDTO> tarefas = tarefaRepository
+                .findByAtividade_IdAtividade(idAtividade)
+                .stream()
+                .map(tarefa -> new TarefaDTO(
+                        tarefa.getIdTarefa(),
+                        tarefa.getNomeTarefa(),
+                        tarefa.getDataInicio(),
+                        tarefa.getDataEntrega(),
+                        tarefa.getStatusTarefa().name()
+                ))
+                .toList();
+
+        MilestoneDTO milestone = atividadeEntity.getMilestone() != null ? new MilestoneDTO(
+                atividadeEntity.getMilestone().getIdMilestone(),
+                atividadeEntity.getMilestone().getNomeMilestone(),
+                atividadeEntity.getMilestone().getDescricao(),
+                atividadeEntity.getMilestone().getDataPrevista()) : null;
+
+        return new AtividadeDetalhesDTO(
+                atividade,
+                tarefas,
+                milestone
         );
     }
 }
