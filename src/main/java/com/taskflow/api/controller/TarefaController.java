@@ -1,9 +1,10 @@
 package com.taskflow.api.controller;
 
 import com.taskflow.api.dto.CriarTarefaDTO;
+import com.taskflow.api.dto.TarefaRequestDTO;
+import com.taskflow.api.dto.TarefaResponseDTO;
 import com.taskflow.api.service.TarefaService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,19 @@ public class TarefaController {
         tarefaService.excluir(idTarefa);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/buscar-tarefa/{idTarefa}")
+    public ResponseEntity<TarefaResponseDTO> buscar(@PathVariable UUID idTarefa) {
+        return ResponseEntity.ok(tarefaService.buscar(idTarefa));
+    }
+
+    @PutMapping("/editar-tarefa/{idTarefa}")
+    public ResponseEntity<TarefaResponseDTO> editar(
+            @PathVariable UUID idTarefa,
+            @RequestBody TarefaRequestDTO request
+    ) {
+        return ResponseEntity.ok(tarefaService.editar(idTarefa, request));
     }
 
 }

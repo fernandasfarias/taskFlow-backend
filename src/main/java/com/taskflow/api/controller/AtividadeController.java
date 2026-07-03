@@ -1,9 +1,6 @@
 package com.taskflow.api.controller;
 
-import com.taskflow.api.dto.AssociarColaboradorAtividadeDTO;
-import com.taskflow.api.dto.AtividadeRequestDTO;
-import com.taskflow.api.dto.AtividadeResponseDTO;
-import com.taskflow.api.dto.AtualizarAtividadeDTO;
+import com.taskflow.api.dto.*;
 import com.taskflow.api.entity.Colaborador;
 import com.taskflow.api.service.AtividadeService;
 import com.taskflow.api.service.ProjetoService;
@@ -62,6 +59,34 @@ public class AtividadeController {
     ) {
         atividadeService.atualizar(idAtividade, dto);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{idProjeto}/kanban")
+    public List<KanbanAtividadeDTO> listar(@PathVariable UUID idProjeto) {
+        return atividadeService.listarPorProjetoKanban(idProjeto);
+    }
+
+    @PatchMapping("/{idAtividade}/status")
+    public ResponseEntity<Void> alterarStatus(
+            @PathVariable UUID idAtividade,
+            @RequestBody AlterarStatusDTO dto
+    ) {
+        atividadeService.alterarStatus(idAtividade, dto.status());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{idAtividade}/excluir")
+    public void deletarAtividade(@PathVariable UUID idAtividade) {
+        atividadeService.deletar(idAtividade);
+    }
+
+    @GetMapping("/{idAtividade}/detalhes")
+    public ResponseEntity<AtividadeDetalhesDTO> detalhes(
+            @PathVariable UUID idAtividade
+    ) {
+        return ResponseEntity.ok(
+                atividadeService.buscarDetalhes(idAtividade)
+        );
     }
 
 }
