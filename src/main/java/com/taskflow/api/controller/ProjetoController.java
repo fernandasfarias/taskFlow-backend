@@ -1,5 +1,6 @@
 package com.taskflow.api.controller;
 
+import com.taskflow.api.dto.DashboardStatsDTO;
 import com.taskflow.api.service.ProjetoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -203,5 +205,34 @@ public class ProjetoController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(usuario);
+    }
+
+    @GetMapping("/stats")
+    public DashboardStatsDTO getStats(Authentication authentication) {
+        UUID idUsuarioLogado = UUID.fromString(authentication.getName());
+        return projetoService.getStats(idUsuarioLogado);
+    }
+
+    @GetMapping("/user")
+    public Map<String, Object> getUser(Authentication authentication) {
+        return Map.of(
+                "name", authentication.getName(),
+                "role", authentication.getAuthorities().toString(),
+                "avatarUrl", ""
+        );
+    }
+
+    @GetMapping("/projects")
+    public List<Projeto> getProjects(
+            Authentication authentication,
+            @RequestParam(required = false) String search
+    ) {
+        UUID idUsuarioLogado = UUID.fromString(authentication.getName());
+
+        if (search != null && !search.isBlank()) {
+            return projetoService.searchProjects(idUsuarioLogado, search);
+        }
+
+        return projetoService.getProjects(idUsuarioLogado);
     }
 }
