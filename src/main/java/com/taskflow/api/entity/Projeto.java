@@ -6,6 +6,8 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 @Getter
@@ -66,6 +68,7 @@ public class Projeto {
 
     // para acessar todas as mensagens de um projeto
     @OneToMany(mappedBy = "projeto")
+    @JsonIgnore
     private List<Mensagem> mensagens;
 
         public UUID getId() {
