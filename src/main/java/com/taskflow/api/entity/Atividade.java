@@ -2,6 +2,8 @@ package com.taskflow.api.entity;
 
 import com.taskflow.api.enums.Status;
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.UUID;
 import lombok.*;
 import java.time.LocalDate;
@@ -45,4 +47,13 @@ public class Atividade {
     @ManyToOne
     @JoinColumn(name = "id_milestone", nullable = true)
     private Milestone milestone;
+
+    @ManyToMany
+    @JoinTable(
+            name = "colaborador_atividade",
+            schema = "projetos",
+            joinColumns = @JoinColumn(name = "id_atividade"),
+            inverseJoinColumns = @JoinColumn(name = "id_colaborador")
+    )
+    private List<Colaborador> colaboradores;
 }

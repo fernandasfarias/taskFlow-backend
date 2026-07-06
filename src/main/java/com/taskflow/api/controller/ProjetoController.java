@@ -65,14 +65,13 @@ public class ProjetoController {
     );
     }
 
-    // FUNCIONANDO
     @GetMapping
     public List<ProjetoDTO> listarTodosMeusProjetos(Authentication authentication) {
-    //ID do gerente logado
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    //ID do usuário logado (gerente, colaborador ou cliente)
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     
-    // lista de entidades do banco filtrada pelo projectmanager logado
-    List<Projeto> meusProjetos = projetoService.listarProjetos(idManagerLogado);
+    // lista de entidades do banco filtrada pelo usuário logado
+    List<Projeto> meusProjetos = projetoService.listarProjetos(idUsuarioLogado);
     
     //converte a lista de entidades para uma lista de DTOs
     return meusProjetos.stream()
@@ -151,9 +150,9 @@ public class ProjetoController {
     // FUNCIONANDO
     @GetMapping("/{idProjeto}/clientes")
     public List<Cliente> listarClientesDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) {
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     // Retorna direto
-    return projetoService.listarClientesDeProjeto(idProjeto, idManagerLogado);  
+    return projetoService.listarClientesDeProjeto(idProjeto, idUsuarioLogado);  
     }
 
     //associar projeto a colaborador
@@ -176,9 +175,9 @@ public class ProjetoController {
     // FUNCIONANDO
     @GetMapping("/{idProjeto}/colaboradores")
     public List<Colaborador> listarColaboradoresDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) { 
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     // Retorna direto
-    return projetoService.listarColaboradoresDeProjeto(idProjeto, idManagerLogado);  
+    return projetoService.listarColaboradoresDeProjeto(idProjeto, idUsuarioLogado);  
     }
 
     // listar TODOS OS CLIENTES

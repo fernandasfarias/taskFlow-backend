@@ -83,9 +83,9 @@ public class ProjetoService {
         projetoRepository.delete(projeto);
     }
 
-    public List<Projeto> listarProjetos(UUID idManagerLogado) {
-        // Busca todos os projetos onde o ID do gerente seja igual ao logado
-        return projetoRepository.findByProjectManagerIdManager(idManagerLogado);
+    public List<Projeto> listarProjetos(UUID idUsuarioLogado) {
+        // Busca todos os projetos associados ao usuário logado (gerente, colaborador ou cliente)
+        return projetoRepository.buscarProjetosDoUsuario(idUsuarioLogado);
     }
 
     public Projeto mostrarProjetoPorNome(String nome) {
@@ -156,11 +156,12 @@ public class ProjetoService {
     }
 
     //listar clientes de um projeto
-    public List<Cliente> listarClientesDeProjeto(UUID idProjeto, UUID idManagerLogado) {
+    public List<Cliente> listarClientesDeProjeto(UUID idProjeto, UUID idUsuarioLogado) {
         // 1. Busca o projeto no banco
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
-        if (!projeto.getIdManager().equals(idManagerLogado)) {
+        
+        if (!usuarioTemAcessoAoProjeto(projeto, idUsuarioLogado)) {
             throw new RuntimeException("Acesso negado");
         }
         return projeto.getClientes();
@@ -206,11 +207,11 @@ public class ProjetoService {
     }
 
      //listar colaboradores de um projeto
-    public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idManagerLogado) {
+    public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idUsuarioLogado) {
         // 1. Busca o projeto no banco
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
-        if (!projeto.getIdManager().equals(idManagerLogado)) {
+        if (!usuarioTemAcessoAoProjeto(projeto, idUsuarioLogado)) {
             throw new RuntimeException("Acesso negado");
         }
         return projeto.getColaboradores();
@@ -242,6 +243,20 @@ public class ProjetoService {
             return cliente.get();
         }
         return null;
+    }
+
+    private boolean usuarioTemAcessoAoProjeto(Projeto projeto, UUID idUsuario) {
+        if (projeto.getIdManager().equals(idUsuario)) {
+            return true;
+        }
+        boolean ehColaborador = projeto.getColaboradores().stream()
+                .anyMatch(c -> c.getIdColaborador().equals(idUsuario));
+        if (ehColaborador) {
+            return true;
+        }
+        boolean ehCliente = projeto.getClientes().stream()
+                .anyMatch(c -> c.getIdCliente().equals(idUsuario));
+        return ehCliente;
     }
 }
         
