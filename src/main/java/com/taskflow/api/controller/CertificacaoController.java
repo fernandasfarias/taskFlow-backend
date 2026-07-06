@@ -32,17 +32,4 @@ public class CertificacaoController {
         certificacaoService.adicionar(idManager, dtos);
 
     }
-
-    {/* controller para remover certificação */}
-    @DeleteMapping("/{idCertificacao}")
-    public ResponseEntity<Void> removerCertificacao(@PathVariable UUID idCertificacao){
-        certificacaoService.remover(idCertificacao);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<List<CertificacaoDTO>> listarCertificacoes(Authentication auth) {
-        String email = auth.getName();
-        return ResponseEntity.ok(certificacaoService.listarPorEmail(email));
-    }
 }

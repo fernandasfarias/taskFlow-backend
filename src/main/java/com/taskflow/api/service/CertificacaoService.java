@@ -51,13 +51,14 @@ public class CertificacaoService {
     }
     
     {/* controller para listar certificações por email */}
-    public List<CertificacaoDTO> listarPorEmail(String email){
-        ProjectManager pm = projectManagerRepository.findByEmail(email)
+    public List<CertificacaoDTO> listarPorId(UUID id){
+        ProjectManager pm = projectManagerRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
             return pm.getCertificacoes()
                 .stream()
                 .map(cert -> new CertificacaoDTO(
+                    cert.getIdCertificacao(),
                     cert.getCertificacao(),
                     cert.getInstituicao(),
                     cert.getCodigoCertificacao(),
