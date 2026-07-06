@@ -9,6 +9,8 @@ import com.taskflow.api.entity.Mensagem;
 import com.taskflow.api.enums.TipoUsuario;
 import com.taskflow.api.service.JwtService;
 import com.taskflow.api.service.MensagemService;
+import com.taskflow.api.entity.ProjectManager;
+import com.taskflow.api.entity.Cliente;
 
 import lombok.RequiredArgsConstructor;
 import java.util.List;
@@ -24,15 +26,19 @@ public class MensagemController {
     private final MensagemService mensagemService;
     private final JwtService jwtService;
 
-    // Converte a Entidade complexa em um DTO limpo para evitar o loop infinito
+  
     private MensagemResponseDTO converterParaDTO(Mensagem m) {
-        String email = "";
+        UUID idRemetente = null; 
+        String nome = "";
+        
         if (m.getProjectManager() != null) {
-            email = m.getProjectManager().getEmail();
+            idRemetente = m.getProjectManager().getIdManager(); 
+            nome = m.getProjectManager().getNomeManager(); 
         } else if (m.getCliente() != null) {
-            email = m.getCliente().getEmail();
+            idRemetente = m.getCliente().getIdCliente(); 
+            nome = m.getCliente().getNomeCliente(); 
         }
-        return new MensagemResponseDTO(m.getIdMensagem(), m.getConteudo(), m.getDataHora(), email);
+         return new MensagemResponseDTO(m.getIdMensagem(), m.getConteudo(), m.getDataHora(), idRemetente, nome);
     }
 
     @PostMapping

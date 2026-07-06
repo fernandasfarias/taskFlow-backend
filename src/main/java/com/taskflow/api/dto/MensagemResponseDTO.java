@@ -7,5 +7,6 @@ public record MensagemResponseDTO(
     UUID idMensagem,
     String conteudo,
     LocalDateTime dataHora,
-    String remetenteEmail
+    UUID remetenteId, 
+    String remetenteNome
 ) {}

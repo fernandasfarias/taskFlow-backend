@@ -28,7 +28,7 @@ public class MensagemService {
         Projeto projeto = projetoRepository.findById(mensagemRequestDTO.idProjeto())
             .orElseThrow(()-> new RuntimeException("Projeto não encontrado"));
 
-        // validar permissão agora usando ID em vez de email
+        // validar permissão agora usando ID 
         boolean temAcesso = false;
 
         if(role == TipoUsuario.PROJECT_MANAGER){
@@ -66,7 +66,7 @@ public class MensagemService {
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(()-> new RuntimeException("Projeto não encontrado"));
 
-        // validar permissão idêntica a do envio (agora com ID)
+        // validar permissão com ID
         boolean temAcesso = false;
 
         if(role == TipoUsuario.PROJECT_MANAGER){
