@@ -1,6 +1,5 @@
 package com.taskflow.api.controller;
 
-import com.taskflow.api.dto.DashboardStatsDTO;
 import com.taskflow.api.service.ProjetoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -67,14 +65,13 @@ public class ProjetoController {
     );
     }
 
-    // FUNCIONANDO
     @GetMapping
     public List<ProjetoDTO> listarTodosMeusProjetos(Authentication authentication) {
-    //ID do gerente logado
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    //ID do usuário logado (gerente, colaborador ou cliente)
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     
-    // lista de entidades do banco filtrada pelo projectmanager logado
-    List<Projeto> meusProjetos = projetoService.listarProjetos(idManagerLogado);
+    // lista de entidades do banco filtrada pelo usuário logado
+    List<Projeto> meusProjetos = projetoService.listarProjetos(idUsuarioLogado);
     
     //converte a lista de entidades para uma lista de DTOs
     return meusProjetos.stream()
@@ -153,9 +150,9 @@ public class ProjetoController {
     // FUNCIONANDO
     @GetMapping("/{idProjeto}/clientes")
     public List<Cliente> listarClientesDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) {
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     // Retorna direto
-    return projetoService.listarClientesDeProjeto(idProjeto, idManagerLogado);  
+    return projetoService.listarClientesDeProjeto(idProjeto, idUsuarioLogado);  
     }
 
     //associar projeto a colaborador
@@ -178,9 +175,9 @@ public class ProjetoController {
     // FUNCIONANDO
     @GetMapping("/{idProjeto}/colaboradores")
     public List<Colaborador> listarColaboradoresDeProjeto(@PathVariable UUID idProjeto, Authentication authentication) { 
-    UUID idManagerLogado = UUID.fromString(authentication.getName());
+    UUID idUsuarioLogado = UUID.fromString(authentication.getName());
     // Retorna direto
-    return projetoService.listarColaboradoresDeProjeto(idProjeto, idManagerLogado);  
+    return projetoService.listarColaboradoresDeProjeto(idProjeto, idUsuarioLogado);  
     }
 
     // listar TODOS OS CLIENTES
@@ -205,34 +202,5 @@ public class ProjetoController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(usuario);
-    }
-
-    @GetMapping("/stats")
-    public DashboardStatsDTO getStats(Authentication authentication) {
-        UUID idUsuarioLogado = UUID.fromString(authentication.getName());
-        return projetoService.getStats(idUsuarioLogado);
-    }
-
-    @GetMapping("/user")
-    public Map<String, Object> getUser(Authentication authentication) {
-        return Map.of(
-                "name", authentication.getName(),
-                "role", authentication.getAuthorities().toString(),
-                "avatarUrl", ""
-        );
-    }
-
-    @GetMapping("/projects")
-    public List<Projeto> getProjects(
-            Authentication authentication,
-            @RequestParam(required = false) String search
-    ) {
-        UUID idUsuarioLogado = UUID.fromString(authentication.getName());
-
-        if (search != null && !search.isBlank()) {
-            return projetoService.searchProjects(idUsuarioLogado, search);
-        }
-
-        return projetoService.getProjects(idUsuarioLogado);
     }
 }
