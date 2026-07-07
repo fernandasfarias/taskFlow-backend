@@ -27,10 +27,6 @@ public class AuthService {
     private final ColaboradorRepository colaboradorRepository;
     private final ClienteRepository clienteRepository;
 
-    private final CertificacaoRepository certificacaoRepository;
-    private final EspecialidadeRepository especialidadeRepository;
-    private final EmpresaRepository empresaRepository;
-
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final EmailService emailService;
@@ -49,9 +45,6 @@ public class AuthService {
         this.projectManagerRepository = projectManagerRepository;
         this.colaboradorRepository = colaboradorRepository;
         this.clienteRepository = clienteRepository;
-        this.certificacaoRepository = certificacaoRepository;
-        this.especialidadeRepository = especialidadeRepository;
-        this.empresaRepository = empresaRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.emailService = emailService;

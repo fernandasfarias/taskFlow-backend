@@ -69,42 +69,24 @@ public class PerfilController {
     }
 
     //ESPECIALIDADE
-    // adicionar especialidade
-    // FUNCIONANDO
-    @PostMapping("me/especialidade")
-    public void adicionarEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EspecialidadeDTO dto){
-        especialidadeService.adicionarEspecialidade(user.email(), dto);
-    }
-    // remover especialidade
-    // FUNCIONANDO
-    @DeleteMapping("me/especialidade/{idEspecialidade}")
-    public void removerEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @PathVariable UUID idEspecialidade){
-        especialidadeService.removerEspecialidade(user.email(), idEspecialidade);
-    }
     // listar especialidades
-    // FUNCIONANDO
+    // FUNCIONANDO !
     @GetMapping("/me/especialidades")
-    public List<EspecialidadeDTO> listarEspecialidades(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        return especialidadeService.listarEspecialidades(user.email());
+    public List<EspecialidadeDTO> listarEspecialidades(@RequestHeader("Authorization") String authReader){
+        String token = authReader.substring(7);
+        String idExtraido = jwtService.extrairEmail(token);
+        UUID idColaborador = UUID.fromString(idExtraido);
+        return especialidadeService.listarEspecialidades(idColaborador);
     }
 
     // EMPRESA
-    // adicionar nova empresa caso o cliente tenha removido a que ele criou durante o cadastro
-    // FUNCIONANDO
-    @PostMapping("/me/empresa")
-    public void adicionarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EmpresaDTO dto){
-        empresaService.adicionarEmpresa(user.email(), dto);
-    }
-    // remover empresa
-    // FUNCIONANDO
-    @DeleteMapping("/me/empresa")
-    public void removerEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        empresaService.removerEmpresa(user.email());
-    }
     // listar empresa
-    // FUNCIONANDO
+    // FUNCIONANDO !
     @GetMapping("/me/empresa")
-    public EmpresaDTO listarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        return empresaService.listarEmpresa(user.email());
+    public EmpresaDTO listarEmpresa(@RequestHeader("Authorization") String authReader){
+        String token = authReader.substring(7);
+        String idExtraido = jwtService.extrairEmail(token);
+        UUID idCliente = UUID.fromString(idExtraido);
+        return empresaService.listarEmpresa(idCliente);
     }
 }
