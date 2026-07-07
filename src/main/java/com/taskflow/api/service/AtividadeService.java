@@ -121,6 +121,7 @@ public class AtividadeService {
                 .stream()
                 .map(tarefa -> new TarefaDTO(
                         tarefa.getIdTarefa(),
+                        tarefa.getAtividade().getIdAtividade(),
                         tarefa.getNomeTarefa(),
                         tarefa.getDataInicio(),
                         tarefa.getDataEntrega(),

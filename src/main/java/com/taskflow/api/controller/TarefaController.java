@@ -10,6 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/atividades")
@@ -55,4 +59,11 @@ public class TarefaController {
         tarefaService.associarColaborador(dto);
         return ResponseEntity.ok().build();
     }
+
+    // método para listar todas as tarefas de uma atividade
+    @GetMapping("/{idAtividade}/tarefas")
+    public ResponseEntity<List<TarefaResponseDTO>> listarTarefasDaAtv(@PathVariable UUID idAtividade){
+        return ResponseEntity.ok(tarefaService.listarTarefaPorAtv(idAtividade));
+    }
+    
 }
