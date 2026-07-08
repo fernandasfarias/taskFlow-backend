@@ -1,43 +1,35 @@
 package com.taskflow.api.config;
 
-import com.taskflow.api.service.AuthService;
 import com.taskflow.api.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.List;
-import com.taskflow.api.dto.UsuarioAutenticadoDTO;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final AuthService authService;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            AuthService authService
-    ) {
+    public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
-        this.authService = authService;
     }
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
         String path = request.getServletPath();
@@ -57,10 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (jwtService.validarToken(token)) {
 
-            String email = jwtService.extrairEmail(token); // extrairEmail == extrairId
+            String email = jwtService.extrairEmail(token);
             String role = jwtService.extrairRole(token);
 
-            //UsuarioAutenticadoDTO usuario = authService.buscarPorEmail(email);
             String userId = jwtService.extrairEmail(token);
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userId, null, List.of(
@@ -79,7 +70,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getServletPath();
         return path.startsWith("/auth/");
     }

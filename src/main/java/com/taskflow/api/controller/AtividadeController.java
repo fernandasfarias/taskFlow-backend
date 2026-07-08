@@ -6,6 +6,7 @@ import com.taskflow.api.service.AtividadeService;
 import com.taskflow.api.service.ProjetoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,23 +39,23 @@ public class AtividadeController {
     }
 
     @GetMapping("/projeto/{idProjeto}")
-    public List<AtividadeResponseDTO> listarPorProjeto(@PathVariable UUID idProjeto) {
+    public List<AtividadeResponseDTO> listarPorProjeto(@NonNull @PathVariable UUID idProjeto) {
         return atividadeService.listarPorProjeto(idProjeto);
     }
 
     @GetMapping("/{idAtividade}")
-    public AtividadeResponseDTO buscarPorId(@PathVariable UUID idAtividade) {
+    public AtividadeResponseDTO buscarPorId(@NonNull @PathVariable UUID idAtividade) {
         return atividadeService.buscarPorId(idAtividade);
     }
 
     @DeleteMapping("/{idAtividade}")
-    public void deletar(@PathVariable UUID idAtividade) {
+    public void deletar(@NonNull @PathVariable UUID idAtividade) {
         atividadeService.deletar(idAtividade);
     }
 
     @PutMapping("/{idAtividade}")
     public ResponseEntity<Void> atualizar(
-            @PathVariable UUID idAtividade,
+            @NonNull @PathVariable UUID idAtividade,
             @RequestBody AtualizarAtividadeDTO dto
     ) {
         atividadeService.atualizar(idAtividade, dto);
@@ -62,13 +63,13 @@ public class AtividadeController {
     }
 
     @GetMapping("/{idProjeto}/kanban")
-    public List<KanbanAtividadeDTO> listar(@PathVariable UUID idProjeto) {
+    public List<KanbanAtividadeDTO> listar(@NonNull @PathVariable UUID idProjeto) {
         return atividadeService.listarPorProjetoKanban(idProjeto);
     }
 
     @PatchMapping("/{idAtividade}/status")
     public ResponseEntity<Void> alterarStatus(
-            @PathVariable UUID idAtividade,
+            @NonNull @PathVariable UUID idAtividade,
             @RequestBody AlterarStatusDTO dto
     ) {
         atividadeService.alterarStatus(idAtividade, dto.status());
@@ -76,17 +77,16 @@ public class AtividadeController {
     }
 
     @DeleteMapping("/{idAtividade}/excluir")
-    public void deletarAtividade(@PathVariable UUID idAtividade) {
+    public void deletarAtividade(@NonNull @PathVariable UUID idAtividade) {
         atividadeService.deletar(idAtividade);
     }
 
     @GetMapping("/{idAtividade}/detalhes")
     public ResponseEntity<AtividadeDetalhesDTO> detalhes(
-            @PathVariable UUID idAtividade
+            @NonNull @PathVariable UUID idAtividade
     ) {
         return ResponseEntity.ok(
                 atividadeService.buscarDetalhes(idAtividade)
         );
     }
-
 }
