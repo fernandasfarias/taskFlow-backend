@@ -9,34 +9,35 @@ import com.taskflow.api.repository.MensagemRepository;
 import com.taskflow.api.repository.ProjetoRepository;
 import com.taskflow.api.enums.TipoUsuario;
 import com.taskflow.api.entity.Projeto;
-import com.taskflow.api.service.JwtService;
 import com.taskflow.api.entity.Cliente;
 
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-
 public class MensagemService {
 
     private final MensagemRepository mensagemRepository;
     private final ProjetoRepository projetoRepository;
-    private final JwtService jwtService;
 
     @Transactional
-    public Mensagem enviarMensagem(MensagemRequestDTO mensagemRequestDTO, String emailUsuariologado, TipoUsuario role){
+    public Mensagem enviarMensagem(MensagemRequestDTO mensagemRequestDTO, String idUsuarioLogado, TipoUsuario role){
 
-        //buscar o projeto
-        Projeto projeto = projetoRepository.findById(mensagemRequestDTO.idProjeto()).orElseThrow(()-> new RuntimeException("Projeto não encontrado"));
+        // buscar o projeto
+        Projeto projeto = projetoRepository.findById(mensagemRequestDTO.idProjeto())
+            .orElseThrow(()-> new RuntimeException("Projeto não encontrado"));
 
-        //validar permição
+        // validar permissão agora usando ID 
         boolean temAcesso = false;
 
         if(role == TipoUsuario.PROJECT_MANAGER){
-            if(projeto.getProjectManager().getEmail().equals(emailUsuariologado)){ //verifica se o email logado é o mesmo do project manager do projeto
+            if(projeto.getProjectManager().getIdManager().toString().equals(idUsuarioLogado)){
                 temAcesso = true;
             }
         }else if(role == TipoUsuario.CLIENTE){
-            temAcesso = projeto.getClientes().stream().anyMatch(c -> emailUsuariologado.equals(c.getEmail())); //verifica se o email logado é o mesmo de algum cliente do projeto   
+            temAcesso = projeto.getClientes().stream()
+                .anyMatch(c -> c.getIdCliente().toString().equals(idUsuarioLogado));
         }
 
         if(!temAcesso){
@@ -49,16 +50,38 @@ public class MensagemService {
         mensagem.setProjeto(projeto);
 
         if (role == TipoUsuario.PROJECT_MANAGER) {
-         mensagem.setProjectManager(projeto.getProjectManager());
+            mensagem.setProjectManager(projeto.getProjectManager());
         } else if (role == TipoUsuario.CLIENTE) {
-        Cliente clienteRemetente = projeto.getClientes().stream()
-            .filter(c -> emailUsuariologado.equals(c.getEmail()))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Cliente não encontrado no projeto"));
-        mensagem.setCliente(clienteRemetente);
-}
+            Cliente clienteRemetente = projeto.getClientes().stream()
+                .filter(c -> c.getIdCliente().toString().equals(idUsuarioLogado))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado no projeto"));
+            mensagem.setCliente(clienteRemetente);
+        }
 
         return mensagemRepository.save(mensagem);
     }
     
+    public List<Mensagem> listarMensagensPorProjeto(UUID idProjeto, String idUsuarioLogado, TipoUsuario role){
+        Projeto projeto = projetoRepository.findById(idProjeto)
+            .orElseThrow(()-> new RuntimeException("Projeto não encontrado"));
+
+        // validar permissão com ID
+        boolean temAcesso = false;
+
+        if(role == TipoUsuario.PROJECT_MANAGER){
+            if(projeto.getProjectManager().getIdManager().toString().equals(idUsuarioLogado)){
+                temAcesso = true;
+            }
+        }else if(role == TipoUsuario.CLIENTE){
+            temAcesso = projeto.getClientes().stream()
+                .anyMatch(c -> c.getIdCliente().toString().equals(idUsuarioLogado));
+        }
+
+        if(!temAcesso){
+            throw new RuntimeException("Usuário não tem permissão para visualizar mensagens deste projeto");
+        }
+
+        return mensagemRepository.findByProjetoOrderByDataHoraAsc(projeto);
+    }
 }

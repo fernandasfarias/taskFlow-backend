@@ -38,32 +38,10 @@ public class EmpresaService {
         clienteRepository.save(cliente);
     }
 
-    // adicionar empresa caso o cliente remova na tela de perfil
-    @Transactional
-    public void adicionarEmpresa(String email, EmpresaDTO dto) {
-        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
-        Empresa empresa = empresaRepository.findByCnpj(dto.cnpj()).orElseGet(() -> {
-            Empresa novaEmpresa = new Empresa();
-            novaEmpresa.setNomeEmpresa(dto.nome());
-            novaEmpresa.setCnpj(dto.cnpj());
-            return empresaRepository.save(novaEmpresa);
-        });
-        cliente.setEmpresa(empresa);
-        clienteRepository.save(cliente);
-    }
-
-    // remover empresa na tela de perfil
-    @Transactional
-    public void removerEmpresa(String email){
-        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado."));
-        cliente.setEmpresa(null);
-        clienteRepository.save(cliente);
-    }
-
     // listar empresa
-    public EmpresaDTO listarEmpresa(String email){
-        Cliente cliente = clienteRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+    // FUNCIONANDO
+    public EmpresaDTO listarEmpresa(UUID id){
+        Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
         Empresa empresa = cliente.getEmpresa();
         return new EmpresaDTO(empresa.getNomeEmpresa(), empresa.getCnpj());
     }

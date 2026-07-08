@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TarefaService {
@@ -106,4 +108,23 @@ public class TarefaService {
        );
     }
 
+        // métodos usados para listar todas as tarefas de uma atividade
+        private TarefaResponseDTO toResponse(Tarefa tarefa) {
+                return new TarefaResponseDTO(
+                        tarefa.getIdTarefa(),
+                        tarefa.getNomeTarefa(),
+                        tarefa.getDataInicio(),
+                        tarefa.getDataEntrega(),
+                        tarefa.getStatusTarefa()
+                );
+        }
+        public List<TarefaResponseDTO> listarTarefaPorAtv(UUID idAtividade){
+                if (!atividadeRepository.existsById(idAtividade)) {
+                        throw new RuntimeException("Atividade não encontrada");
+                }
+                return tarefaRepository.findByAtividade_IdAtividade(idAtividade)
+                        .stream()
+                        .map(this::toResponse)
+                        .toList();
+        }
 }

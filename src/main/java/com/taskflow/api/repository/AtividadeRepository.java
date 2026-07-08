@@ -12,20 +12,20 @@ import java.util.UUID;
 
 public interface AtividadeRepository extends JpaRepository<Atividade, UUID> {
 
-    List<Atividade> findByProjetoIdProjeto(UUID idProjeto);
+        List<Atividade> findByProjetoIdProjeto(UUID idProjeto);
+        List<Atividade> findByMilestoneIdMilestone(UUID idMilestone);
 
-    List<Atividade> findByMilestoneIdMilestone(UUID idMilestone);
 
-    @Modifying
-    @Transactional
-    @Query(
-            value = """
-            INSERT INTO projetos.colaborador_atividade 
-            (id_colaborador, id_atividade)
-            VALUES (:idColaborador, :idAtividade)
-        """, nativeQuery = true )
-        void associar(
-                @Param("idColaborador") UUID idColaborador,
-                @Param("idAtividade") UUID idAtividade
-        );
+        @Modifying
+        @Transactional
+        @Query(
+                value = """
+                INSERT INTO projetos.colaborador_atividade 
+                (id_colaborador, id_atividade)
+                VALUES (:idColaborador, :idAtividade)
+                """, nativeQuery = true )
+                void associar(
+                        @Param("idColaborador") UUID idColaborador,
+                        @Param("idAtividade") UUID idAtividade
+                );
 }

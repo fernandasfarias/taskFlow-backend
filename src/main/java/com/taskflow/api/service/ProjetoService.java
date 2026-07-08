@@ -1,6 +1,5 @@
 package com.taskflow.api.service;
 
-import com.taskflow.api.dto.DashboardStatsDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,7 +13,6 @@ import com.taskflow.api.entity.Cliente;
 import com.taskflow.api.repository.ColaboradorRepository;
 import com.taskflow.api.entity.Colaborador;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Collections;
 import jakarta.transaction.Transactional;
@@ -85,9 +83,9 @@ public class ProjetoService {
         projetoRepository.delete(projeto);
     }
 
-    public List<Projeto> listarProjetos(UUID idManagerLogado) {
-        // Busca todos os projetos onde o ID do gerente seja igual ao logado
-        return projetoRepository.findByProjectManagerIdManager(idManagerLogado);
+    public List<Projeto> listarProjetos(UUID idUsuarioLogado) {
+        // Busca todos os projetos associados ao usuário logado (gerente, colaborador ou cliente)
+        return projetoRepository.buscarProjetosDoUsuario(idUsuarioLogado);
     }
 
     public Projeto mostrarProjetoPorNome(String nome) {
@@ -158,11 +156,12 @@ public class ProjetoService {
     }
 
     //listar clientes de um projeto
-    public List<Cliente> listarClientesDeProjeto(UUID idProjeto, UUID idManagerLogado) {
+    public List<Cliente> listarClientesDeProjeto(UUID idProjeto, UUID idUsuarioLogado) {
         // 1. Busca o projeto no banco
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
-        if (!projeto.getIdManager().equals(idManagerLogado)) {
+        
+        if (!usuarioTemAcessoAoProjeto(projeto, idUsuarioLogado)) {
             throw new RuntimeException("Acesso negado");
         }
         return projeto.getClientes();
@@ -208,11 +207,11 @@ public class ProjetoService {
     }
 
      //listar colaboradores de um projeto
-    public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idManagerLogado) {
+    public List<Colaborador> listarColaboradoresDeProjeto(UUID idProjeto, UUID idUsuarioLogado) {
         // 1. Busca o projeto no banco
         Projeto projeto = projetoRepository.findById(idProjeto)
             .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
-        if (!projeto.getIdManager().equals(idManagerLogado)) {
+        if (!usuarioTemAcessoAoProjeto(projeto, idUsuarioLogado)) {
             throw new RuntimeException("Acesso negado");
         }
         return projeto.getColaboradores();
@@ -246,45 +245,18 @@ public class ProjetoService {
         return null;
     }
 
-    public DashboardStatsDTO getStats(UUID idUsuarioLogado) {
-        List<Projeto> projetos = projetoRepository.buscarProjetosDoUsuario(idUsuarioLogado);
-
-        LocalDate hoje = LocalDate.now();
-
-        long total = projetos.size();
-
-        long concluidos = projetos.stream()
-                .filter(p -> p.getDataEntrega() != null)
-                .filter(p -> p.getDataEntrega().isBefore(hoje))
-                .count();
-
-        long emAndamento = projetos.stream()
-                .filter(p -> p.getDataInicio() != null)
-                .filter(p -> p.getDataEntrega() != null)
-                .filter(p -> !hoje.isBefore(p.getDataInicio()) && !hoje.isAfter(p.getDataEntrega()))
-                .count();
-
-        long aFazer = projetos.stream()
-                .filter(p -> p.getDataInicio() == null)
-                .filter(p -> p.getDataEntrega() == null)
-                .count();
-
-        return new DashboardStatsDTO(total, emAndamento, concluidos, aFazer);
-    }
-
-    public List<Projeto> getProjects(UUID idUsuarioLogado) {
-        return projetoRepository.buscarProjetosDoUsuario(idUsuarioLogado);
-    }
-
-    public List<Projeto> searchProjects(UUID idUsuarioLogado, String termo) {
-        if (termo == null || termo.isBlank()) {
-            return projetoRepository.buscarProjetosDoUsuario(idUsuarioLogado);
+    private boolean usuarioTemAcessoAoProjeto(Projeto projeto, UUID idUsuario) {
+        if (projeto.getIdManager().equals(idUsuario)) {
+            return true;
         }
-
-        return projetoRepository.buscarProjetosDoUsuarioPorTermo(
-                idUsuarioLogado,
-                termo.trim()
-        );
+        boolean ehColaborador = projeto.getColaboradores().stream()
+                .anyMatch(c -> c.getIdColaborador().equals(idUsuario));
+        if (ehColaborador) {
+            return true;
+        }
+        boolean ehCliente = projeto.getClientes().stream()
+                .anyMatch(c -> c.getIdCliente().equals(idUsuario));
+        return ehCliente;
     }
 }
         

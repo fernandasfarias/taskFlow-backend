@@ -4,6 +4,7 @@ import com.taskflow.api.dto.*;
 import com.taskflow.api.service.CertificacaoService;
 import com.taskflow.api.service.EmpresaService;
 import com.taskflow.api.service.EspecialidadeService;
+import com.taskflow.api.service.JwtService;
 import com.taskflow.api.service.PerfilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import java.util.List;
 
+import com.taskflow.api.service.JwtService; 
+
 @RestController
 @RequestMapping("/profile")
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class PerfilController {
     private final CertificacaoService certificacaoService;
     private final EmpresaService empresaService;
     private final EspecialidadeService especialidadeService;
+    private final JwtService jwtService;
 
     // PERFIL DO USUARIO
     // editar o perfil do usuario: enpoint profile/id
@@ -48,68 +52,41 @@ public class PerfilController {
     }
 
     // CERTIFICACAO
-    // adicionar uma nova certificacao
-    // FUNCIONANDO
-    @PostMapping("/me/certificacoes")
-    public void adicionarCertificacao(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody CertificacaoDTO dto){
-        certificacaoService.adicionarCertificacao(user.email(), dto);
-    }
-    //editar certificacao
-    // FUNCIONANDO
-    @PutMapping("/me/certificacoes/{id}")
-    public void atualizarCertificacoes(@PathVariable("id") UUID id, @RequestBody CertificacaoDTO dto){
-        certificacaoService.atualizar(id, dto);
-    }
     // remover certificacao
-    // FUNCIONANDO
+    // FUNCIONANDO !
     @DeleteMapping("/me/certificacoes/{id}")
     public void removerCertificacao(@PathVariable UUID id){
         certificacaoService.remover(id);
     }
-    // Mostrar certificações
-    // FUNCIONANDO
+    // listar certificações
+    // FUNCIONANDO !
     @GetMapping("/me/certificacoes")
-    public List<CertificacaoDTO> listarCertificacoes(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        return certificacaoService.listarPorEmail(user.email());
+    public List<CertificacaoDTO> listarCertificacoes(@RequestHeader("Authorization") String authReader){
+        String token = authReader.substring(7);
+        String idExtraido = jwtService.extrairEmail(token);
+        UUID idManager = UUID.fromString(idExtraido);
+        return certificacaoService.listarPorId(idManager);
     }
 
     //ESPECIALIDADE
-    // adicionar especialidade
-    // FUNCIONANDO
-    @PostMapping("me/especialidade")
-    public void adicionarEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EspecialidadeDTO dto){
-        especialidadeService.adicionarEspecialidade(user.email(), dto);
-    }
-    // remover especialidade
-    // FUNCIONANDO
-    @DeleteMapping("me/especialidade/{idEspecialidade}")
-    public void removerEspecialidade(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @PathVariable UUID idEspecialidade){
-        especialidadeService.removerEspecialidade(user.email(), idEspecialidade);
-    }
     // listar especialidades
-    // FUNCIONANDO
+    // FUNCIONANDO !
     @GetMapping("/me/especialidades")
-    public List<EspecialidadeDTO> listarEspecialidades(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        return especialidadeService.listarEspecialidades(user.email());
+    public List<EspecialidadeDTO> listarEspecialidades(@RequestHeader("Authorization") String authReader){
+        String token = authReader.substring(7);
+        String idExtraido = jwtService.extrairEmail(token);
+        UUID idColaborador = UUID.fromString(idExtraido);
+        return especialidadeService.listarEspecialidades(idColaborador);
     }
 
     // EMPRESA
-    // adicionar nova empresa caso o cliente tenha removido a que ele criou durante o cadastro
-    // FUNCIONANDO
-    @PostMapping("/me/empresa")
-    public void adicionarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user, @RequestBody EmpresaDTO dto){
-        empresaService.adicionarEmpresa(user.email(), dto);
-    }
-    // remover empresa
-    // FUNCIONANDO
-    @DeleteMapping("/me/empresa")
-    public void removerEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        empresaService.removerEmpresa(user.email());
-    }
     // listar empresa
-    // FUNCIONANDO
+    // FUNCIONANDO !
     @GetMapping("/me/empresa")
-    public EmpresaDTO listarEmpresa(@AuthenticationPrincipal UsuarioAutenticadoDTO user){
-        return empresaService.listarEmpresa(user.email());
+    public EmpresaDTO listarEmpresa(@RequestHeader("Authorization") String authReader){
+        String token = authReader.substring(7);
+        String idExtraido = jwtService.extrairEmail(token);
+        UUID idCliente = UUID.fromString(idExtraido);
+        return empresaService.listarEmpresa(idCliente);
     }
 }
