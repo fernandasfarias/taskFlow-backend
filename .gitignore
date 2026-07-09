@@ -33,3 +33,8 @@ build/
 .vscode/
 
 /src/generated/prisma
+
+### ENVIROMENT ###
+.env
+.env.*
+!.env.example
