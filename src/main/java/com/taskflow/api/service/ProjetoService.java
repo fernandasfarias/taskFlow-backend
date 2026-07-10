@@ -6,11 +6,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.taskflow.api.dto.ProjetoDTO;
 import com.taskflow.api.repository.ProjectManagerRepository;
 import com.taskflow.api.repository.ProjetoRepository;
+import com.taskflow.api.repository.TarefaRepository;
 import com.taskflow.api.entity.ProjectManager;
 import com.taskflow.api.entity.Projeto;
+import com.taskflow.api.repository.AtividadeRepository;
 import com.taskflow.api.repository.ClienteRepository;
 import com.taskflow.api.entity.Cliente;
 import com.taskflow.api.repository.ColaboradorRepository;
+import com.taskflow.api.repository.MensagemRepository;
+import com.taskflow.api.repository.MilestoneRepository;
 import com.taskflow.api.entity.Colaborador;
 
 import java.util.List;
@@ -31,6 +35,11 @@ public class ProjetoService {
     private final ProjectManagerRepository projectManagerRepository;
     private final ClienteRepository clienteRepository;
     private final ColaboradorRepository colaboradorRepository;
+
+    private final TarefaRepository tarefaRepository;
+    private final MilestoneRepository milestoneRepository;
+    private final AtividadeRepository atividadeRepository;
+    private final MensagemRepository mensagemRepository;
 
     //atualizar projeto
     public void editarProjeto(UUID idProjeto, ProjetoDTO dto, UUID idManagerLogado) {
@@ -70,17 +79,33 @@ public class ProjetoService {
     //deletar projeto
     @Transactional
         public void deletarProjeto(UUID idProjeto, UUID idManagerLogado) {
-        // 1. Busca o projeto no banco
-        Projeto projeto = projetoRepository.findById(idProjeto)
-            .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
+            Projeto projeto = projetoRepository.findById(idProjeto)
+                .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
 
-        // 2. VALIDAÇÃO: O gerente logado é o dono desse projeto?
-        if (!projeto.getIdManager().equals(idManagerLogado)) {
-            throw new RuntimeException("Acesso negado");
-        }
+            if (!projeto.getIdManager().equals(idManagerLogado)) {
+                throw new RuntimeException("Acesso negado");
+            }
 
-        // 3. Se passou, deleta
-        projetoRepository.delete(projeto);
+            // Tabelas de associação
+            projetoRepository.deleteColaboradorAtividades(idProjeto);
+            projetoRepository.deleteProjetoClientes(idProjeto);
+            projetoRepository.deleteProjetoColaboradores(idProjeto);
+
+            tarefaRepository.deleteColaboradorTarefas(idProjeto);
+            
+            // Entidades dependentes
+            tarefaRepository.deleteByProjeto(idProjeto);
+
+            atividadeRepository.desvincularMilestones(idProjeto);
+
+            milestoneRepository.deleteByProjeto(idProjeto);
+
+            atividadeRepository.deleteByProjeto(idProjeto);
+
+            mensagemRepository.deleteByProjeto(idProjeto);
+
+            // Por último, o projeto
+            projetoRepository.deleteById(idProjeto);
     }
 
     public List<Projeto> listarProjetos(UUID idUsuarioLogado) {

@@ -2,6 +2,7 @@ package com.taskflow.api.repository;
 
 import com.taskflow.api.entity.Projeto;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -53,5 +54,30 @@ public interface ProjetoRepository
                 @Param("idUsuario") UUID idUsuario,
                 @Param("termo") String termo
         );
+
+        @Modifying
+        @Query(value = """
+            DELETE FROM projetos.projeto_colaborador
+            WHERE id_projeto = :idProjeto
+            """, nativeQuery = true)
+        void deleteProjetoColaboradores(@Param("idProjeto") UUID idProjeto);
+
+        @Modifying
+        @Query(value = """
+            DELETE FROM projetos.projeto_cliente
+            WHERE id_projeto = :idProjeto
+            """, nativeQuery = true)
+        void deleteProjetoClientes(@Param("idProjeto") UUID idProjeto);
+
+        @Modifying
+        @Query(value = """
+            DELETE FROM projetos.colaborador_atividade
+            WHERE id_atividade IN (
+                SELECT id_atividade
+                FROM projetos.atividade
+                WHERE id_projeto = :idProjeto
+            )
+            """, nativeQuery = true)
+        void deleteColaboradorAtividades(@Param("idProjeto") UUID idProjeto);
 }
 
