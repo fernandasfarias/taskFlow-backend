@@ -67,7 +67,10 @@ public class Projeto {
     private List<Atividade> atividades;
 
     // para acessar todas as mensagens de um projeto
-    @OneToMany(mappedBy = "projeto")
+    @OneToMany(mappedBy = "projeto",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     @JsonIgnore
     private List<Mensagem> mensagens;
 

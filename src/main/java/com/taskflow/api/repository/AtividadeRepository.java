@@ -28,4 +28,19 @@ public interface AtividadeRepository extends JpaRepository<Atividade, UUID> {
                         @Param("idColaborador") UUID idColaborador,
                         @Param("idAtividade") UUID idAtividade
                 );
+        
+        @Modifying
+        @Query("""
+                DELETE FROM Atividade a
+                WHERE a.projeto.idProjeto = :idProjeto
+        """)
+        void deleteByProjeto(@Param("idProjeto") UUID idProjeto);
+
+        @Modifying
+        @Query("""
+        UPDATE Atividade a
+        SET a.milestone = null
+        WHERE a.projeto.idProjeto = :idProjeto
+        """)
+        void desvincularMilestones(@Param("idProjeto") UUID idProjeto);
 }
