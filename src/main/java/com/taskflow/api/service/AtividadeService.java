@@ -6,8 +6,11 @@ import com.taskflow.api.entity.Milestone;
 import com.taskflow.api.entity.Projeto;
 import com.taskflow.api.enums.Status;
 import com.taskflow.api.repository.AtividadeRepository;
+import com.taskflow.api.repository.MilestoneRepository;
 import com.taskflow.api.repository.ProjetoRepository;
 import com.taskflow.api.repository.TarefaRepository;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ public class AtividadeService {
     private final AtividadeRepository atividadeRepository;
     private final ProjetoRepository projetoRepository;
     private final TarefaRepository tarefaRepository;
+    private final MilestoneRepository milestoneRepository;
 
     @SuppressWarnings("null")
     public AtividadeResponseDTO criar(AtividadeRequestDTO dto) {
@@ -57,12 +61,21 @@ public class AtividadeService {
         return toResponse(atividade);
     }
 
+    @Transactional
     public void deletar(@NonNull UUID idAtividade) {
         if (!atividadeRepository.existsById(idAtividade)) {
-            throw new RuntimeException("Atividade não encontrada");
-        }
-        atividadeRepository.deleteById(idAtividade);
+        throw new RuntimeException("Atividade não encontrada");
     }
+
+    // Remove colaboradores associados às tarefas
+    tarefaRepository.deleteColaboradorTarefasByAtividade(idAtividade);
+
+    // Remove tarefas
+    tarefaRepository.deleteByAtividade(idAtividade);
+
+    // Remove a atividade
+    atividadeRepository.deleteById(idAtividade);
+}
 
     private AtividadeResponseDTO toResponse(Atividade atividade) {
         Projeto proj = atividade.getProjeto();

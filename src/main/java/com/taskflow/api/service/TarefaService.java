@@ -60,6 +60,10 @@ public class TarefaService {
         Tarefa tarefa = tarefaRepository.findById(idTarefa)
                 .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
 
+        // Remove as associações dos colaboradores com a tarefa
+        tarefaRepository.deleteColaboradorTarefa(idTarefa);
+
+        // remover tarefa
         tarefaRepository.delete(tarefa);
     }
 

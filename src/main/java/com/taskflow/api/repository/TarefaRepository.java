@@ -49,4 +49,31 @@ public interface TarefaRepository extends JpaRepository<Tarefa, UUID> {
         """, nativeQuery = true)
     void deleteColaboradorTarefas(@Param("idProjeto") UUID idProjeto);
 
+    @Modifying
+    @Query("""
+        DELETE FROM Tarefa t
+        WHERE t.atividade.idAtividade = :idAtividade
+    """)
+    void deleteByAtividade(@Param("idAtividade") UUID idAtividade);
+
+        @Modifying
+        @Query(value = """
+            DELETE FROM projetos.colaborador_tarefa
+            WHERE id_tarefa IN (
+                SELECT id_tarefa
+                FROM projetos.tarefa
+                WHERE id_atividade = :idAtividade
+            )
+        """, nativeQuery = true)
+        void deleteColaboradorTarefasByAtividade(
+            @Param("idAtividade") UUID idAtividade
+    );
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+        DELETE FROM projetos.colaborador_tarefa
+        WHERE id_tarefa = :idTarefa
+        """, nativeQuery = true)
+    void deleteColaboradorTarefa(@Param("idTarefa") UUID idTarefa);
 }

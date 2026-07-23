@@ -48,10 +48,10 @@ public class ProjetoController {
     // FUNCIONANDO
     @GetMapping("/buscar")
     public ProjetoDTO buscarPorNome(@RequestParam String nome) {
-    // 1. O service busca a entidade Projeto pura do banco
+   
     Projeto projetoEncontrado = projetoService.mostrarProjetoPorNome(nome);
     
-    // 2. Você transforma o Projeto em ProjetoDTO mapeando os campos manualmente
+    
     return new ProjetoDTO(
         projetoEncontrado.getId(),
         projetoEncontrado.getNome(),
